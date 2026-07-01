@@ -77,10 +77,12 @@
 
     <div id="loginModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" onclick="tutupModalLogin()">
         <div class="bg-white max-w-sm w-full rounded-2xl p-6 shadow-2xl border border-stone-100 transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
-            <div class="text-center mb-6">
-                <h3 class="text-2xl font-serif text-stone-900 font-bold tracking-wider">LOGIN PORTAL</h3>
-                <p class="text-xs text-stone-400 uppercase tracking-widest mt-1">Ubud Haven Management & Guest System</p>
+            
+            <div class="flex border-b border-stone-100 mb-6 text-sm font-medium">
+                <button id="tabLogin" onclick="switchAuthTab('login')" class="w-1/2 pb-3 text-center border-b-2 border-stone-950 text-stone-950 font-serif tracking-wider">LOGIN</button>
+                <button id="tabSignUp" onclick="switchAuthTab('signup')" class="w-1/2 pb-3 text-center border-b-2 border-transparent text-stone-400 hover:text-stone-600 font-serif tracking-wider">SIGN UP</button>
             </div>
+
             <form id="loginForm" class="space-y-4">
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email</label>
@@ -90,15 +92,34 @@
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Password</label>
                     <input type="password" id="loginPassword" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
                 </div>
-                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Masuk</button>
+                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Masuk Sistem</button>
             </form>
+
+            <form id="signUpForm" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Nama Lengkap</label>
+                    <input type="text" id="regNama" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email Tamu</label>
+                    <input type="email" id="regEmail" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Buat Password</label>
+                    <input type="password" id="regPassword" required placeholder="Minimal 6 karakter" class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
+                </div>
+                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Daftar Akun Baru</button>
+            </form>
+
             <div id="loginError" class="mt-4 p-2 rounded-lg text-xs text-center bg-red-50 text-red-600 hidden"></div>
+            <div id="regSuccess" class="mt-4 p-2 rounded-lg text-xs text-center bg-green-50 text-green-700 hidden"></div>
         </div>
     </div>
 
     <script>
         const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTt4Mjc5NTA1NywiZXhwIjoyMDk4MzcxMDU3fQ.l87HFL8F4KGRhaAv64PXNfPY8awpoPItm8Y_QPS6cSY"; 
+        // KEY SUDAH DIPERBAIKI UTAL (MENGHAPUS HURUF 't' DAN 'x' KECIL YANG MERUSAK STRING)
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyMjc5NTA1NywiZXhwIjoyMDk4MzcxMDU3fQ.l87HFL8F4KGRhaAv64PXNfPY8awpoPItm8Y_QPS6cSY"; 
 
         let kalenderVilla;
         let tanggalTerpesan = [];
@@ -148,9 +169,69 @@
             modal.classList.add('opacity-0');
             modal.firstElementChild.classList.add('scale-95');
             setTimeout(() => modal.classList.add('hidden'), 300);
+            // Reset form ke tab login semula saat modal ditutup
+            switchAuthTab('login');
         }
 
-        // PERBARUAN UTAMA: LOGIKA EKSEKUSI LOGIN PINTAR MULTI-ROLE
+        // FUNGSI BERPINDAH TAB (LOGIN <-> SIGN UP)
+        function switchAuthTab(type) {
+            const tabLogin = document.getElementById('tabLogin');
+            const tabSignUp = document.getElementById('tabSignUp');
+            const loginForm = document.getElementById('loginForm');
+            const signUpForm = document.getElementById('signUpForm');
+            document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('regSuccess').classList.add('hidden');
+
+            if(type === 'login') {
+                tabLogin.className = "w-1/2 pb-3 text-center border-b-2 border-stone-950 text-stone-950 font-serif tracking-wider";
+                tabSignUp.className = "w-1/2 pb-3 text-center border-b-2 border-transparent text-stone-400 hover:text-stone-600 font-serif tracking-wider";
+                loginForm.classList.remove('hidden');
+                signUpForm.classList.add('hidden');
+            } else {
+                tabSignUp.className = "w-1/2 pb-3 text-center border-b-2 border-stone-950 text-stone-950 font-serif tracking-wider";
+                tabLogin.className = "w-1/2 pb-3 text-center border-b-2 border-transparent text-stone-400 hover:text-stone-600 font-serif tracking-wider";
+                signUpForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        // 1. LOGIKA SUBMIT SIGN UP (DAFTAR AKUN CUSTOMER BARU)
+        document.getElementById('signUpForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nama = document.getElementById('regNama').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const errDiv = document.getElementById('loginError');
+            const successDiv = document.getElementById('regSuccess');
+            
+            errDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+                    method: 'POST',
+                    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: email, 
+                        password: password,
+                        options: { data: { full_name: nama } }
+                    })
+                });
+
+                const resData = await response.json();
+                if (!response.ok) throw new Error(resData.error_description || resData.message || "Gagal mendaftar.");
+
+                successDiv.innerText = "Pendaftaran Berhasil! Silakan beralih ke tab LOGIN.";
+                successDiv.classList.remove('hidden');
+                document.getElementById('signUpForm').reset();
+
+            } catch (error) {
+                errDiv.innerText = error.message;
+                errDiv.classList.remove('hidden');
+            }
+        });
+
+        // 2. LOGIKA SUBMIT AUTH LOGIN (PINTAR MULTI-ROLE)
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -159,7 +240,6 @@
             errDiv.classList.add('hidden');
 
             try {
-                // 1. Tembak Supabase Auth Token
                 const responseAuth = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
                     method: 'POST',
                     headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
@@ -169,31 +249,24 @@
                 const resAuthData = await responseAuth.json();
                 if (!responseAuth.ok) throw new Error(resAuthData.error_description || "Email atau password salah.");
 
-                // Simpan token akses ke memori browser
                 localStorage.setItem('supabase_token', resAuthData.access_token);
 
-                // 2. Cek apakah email ini terdaftar sebagai Admin di tabel user_roles publik Bli
+                // Cek Role ke tabel publik user_roles
                 const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}&select=role`, {
                     method: 'GET',
-                    headers: { 
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
                 });
 
                 const resRoleData = await responseRole.json();
-                
-                // Set default role sebagai customer
                 let userRole = 'customer'; 
                 if (responseRole.ok && resRoleData.length > 0) {
                     userRole = resRoleData[0].role;
                 }
 
-                // 3. Pengalihan Halaman (Menggunakan Clean URLs tanpa .html)
                 if (userRole === 'admin') {
-                    window.location.href = 'admin'; // Menuju dasbor staff
+                    window.location.href = 'admin'; 
                 } else {
-                    window.location.href = 'customer'; // Menuju dasbor tamu/customer
+                    window.location.href = 'customer'; 
                 }
 
             } catch (error) {
@@ -220,7 +293,7 @@
                 tanggal_checkin: fmt(tgl[0]),
                 tanggal_checkout: fmt(tgl[1]),
                 tipe_villa: "1-Bedroom Private Pool Villa",
-                status: "Pending" // Tambahkan status default saat booking baru masuk
+                status: "Pending" 
             };
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa`, {
