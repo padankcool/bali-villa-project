@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings | Ubud Haven</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-stone-50 text-stone-800 antialiased min-h-screen flex flex-col">
 
+    <!-- NAVBAR TAMU -->
     <nav class="bg-white border-b border-stone-100 sticky top-0 z-40 shadow-sm px-6 py-4 flex items-center justify-between">
         <a href="/" class="text-xl font-serif tracking-widest font-bold text-stone-900">UBUD HAVEN</a>
         <div class="flex items-center space-x-4">
@@ -18,13 +20,16 @@
         </div>
     </nav>
 
+    <!-- MAIN CONTAINER -->
     <main class="max-w-4xl mx-auto w-full px-4 py-10 flex-grow">
         
+        <!-- WELCOME HEADER -->
         <div class="mb-8">
             <h1 class="text-3xl font-serif text-stone-900">Reservasi Saya</h1>
             <p class="text-xs text-stone-400 mt-1 uppercase tracking-wider">Pantau status pemesanan villa Anda secara real-time.</p>
         </div>
 
+        <!-- TEMPAT KARTU PESANAN (DIPROSES VIA JS) -->
         <div id="bookingContainer" class="space-y-6">
             <div class="bg-white p-8 text-center rounded-xl border border-stone-200 text-stone-400 text-sm shadow-sm">
                 Sedang mengambil riwayat reservasi Anda...
@@ -33,15 +38,16 @@
 
     </main>
 
+    <!-- FOOTER -->
     <footer class="bg-white border-t border-stone-100 text-center py-4 text-xs text-stone-400 font-light">
         &copy; 2026 Ubud Haven Luxury Villas Portal.
     </footer>
 
+    <!-- LOGIKA JAVASCRIPT & DATABASE FILTERING -->
     <script>
         const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTUwNTcsImV4cCI6MjA5ODM3MTA1N30.bC-GO4HHdBo4zxNfJZ4BDmIPfQKlzA6d_9g_-ThPBoc"; // Masukkan Anon Key Supabase Bli di sini
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyMjc5NTA1NywiZXhwIjoyMDk4MzcxMDU3fQ.l87HFL8F4KGRhaAv64PXNfPY8awpoPItm8Y_QPS6cSY"; 
 
-        // 1. PROTEKSI KEAMANAN SISI USER
         const token = localStorage.getItem('supabase_token');
         if (!token) {
             alert("Silakan login terlebih dahulu untuk melihat reservasi Anda.");
@@ -50,7 +56,6 @@
 
         let emailTamuAktif = "";
 
-        // 2. CEK SIAPA USER YANG LOGIN & AMBIL EMAILNYA
         async function dapatkanProfilUser() {
             try {
                 const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
@@ -67,7 +72,6 @@
                 emailTamuAktif = data.email;
                 document.getElementById('userEmail').innerText = emailTamuAktif;
                 
-                // Setelah email didapat, langsung cari data bookingnya
                 ambilBookingSpesifikTamu();
                 
             } catch (error) {
@@ -75,12 +79,10 @@
             }
         }
 
-        // 3. AMBIL DATA PESANAN YANG HANYA MILIK EMAIL USER TERSEBUT
         async function ambilBookingSpesifikTamu() {
             const container = document.getElementById('bookingContainer');
             
             try {
-                // Trik API menyaring data berdasarkan email_tamu yang sama persis (eq)
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?email_tamu=eq.${encodeURIComponent(emailTamuAktif)}&order=id.desc`, {
                     method: 'GET',
                     headers: {
@@ -106,14 +108,18 @@
 
                 container.innerHTML = '';
                 
-                // Loop data dan buat tampilan kartu mewah untuk masing-masing pesanan
                 data.forEach(booking => {
                     const status = booking.status || 'Pending';
                     
-                    // Logika warna badge status dinamis
                     let statusBadge = `<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide">⏳ MENUNGGU KONFIRMASI</span>`;
+                    let tombolBatal = `<button onclick="batalkanPesananTamu(${booking.id})" class="text-xs font-medium text-red-600 hover:text-red-800 transition">Batalkan Reservasi</button>`;
+                    
                     if (status === 'Confirmed') {
                         statusBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide">✅ PESANAN DIKONFIRMASI</span>`;
+                        tombolBatal = `<span class="text-xs text-stone-400 cursor-not-allowed">Tidak dapat dibatalkan (Sudah dikonfirmasi)</span>`;
+                    } else if (status === 'Cancelled') {
+                        statusBadge = `<span class="bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide">❌ RESERVASI DIBATALKAN</span>`;
+                        tombolBatal = `<span class="text-xs text-stone-400 italic">Pesanan ini telah dibatalkan</span>`;
                     }
 
                     container.innerHTML += `
@@ -142,10 +148,11 @@
                             </div>
 
                             <div class="p-4 bg-stone-50/30 px-6 flex flex-col sm:flex-row justify-between items-center gap-3">
-                                <p class="text-xs text-stone-400 text-center sm:text-left">Atas nama: <span class="font-medium text-stone-700">${booking.nama_tamu}</span></p>
-                                <div class="flex space-x-2 w-full sm:w-auto">
-                                    <a href="https://wa.me/628XXXXXXXXX" target="_blank" class="w-full sm:w-auto text-center bg-white border border-stone-200 hover:border-stone-400 text-stone-700 px-4 py-2 rounded-lg text-xs font-medium transition shadow-sm">
-                                        💬 Hubungi Bantuan Villa
+                                <p class="text-xs text-stone-400">Atas nama: <span class="font-medium text-stone-700">${booking.nama_tamu}</span></p>
+                                <div class="flex items-center space-x-6">
+                                    ${tombolBatal}
+                                    <a href="https://wa.me/628123456789" target="_blank" class="bg-white border border-stone-200 hover:border-stone-400 text-stone-700 px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-sm">
+                                        💬 Hubungi Villa
                                     </a>
                                 </div>
                             </div>
@@ -158,12 +165,37 @@
             }
         }
 
+        // FUNGSI AKSI UTAMA: PEMBATALAN MANDIRI OLEH TAMU
+        async function batalkanPesananTamu(id) {
+            if (!confirm("Apakah Anda yakin ingin membatalkan reservasi villa ini? Tindakan ini tidak dapat dibatalkan.")) return;
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?id=eq.${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: 'Cancelled' })
+                });
+
+                if (response.ok) {
+                    alert("Reservasi Anda berhasil dibatalkan.");
+                    ambilBookingSpesifikTamu(); // Refresh UI kartu
+                } else {
+                    throw new Error();
+                }
+            } catch (error) {
+                alert("Gagal melakukan pembatalan. Hubungi pihak Ubud Haven via WhatsApp.");
+            }
+        }
+
         function logout() {
             localStorage.removeItem('supabase_token');
             window.location.href = '/';
         }
 
-        // Jalankan otomatis
         dapatkanProfilUser();
     </script>
 </body>
