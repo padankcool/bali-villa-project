@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri Investasi | Ubud Haven Luxury Villas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased">
+
+    <nav class="bg-white/90 backdrop-blur-md border-b border-stone-100 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="index.html" class="text-xl font-serif tracking-widest font-bold text-stone-900">UBUD HAVEN</a>
+            <div class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wider text-stone-600">
+                <a href="index.html" class="hover:text-stone-900 transition">BERANDA</a>
+                <div class="relative group">
+                    <button class="hover:text-stone-900 transition flex items-center space-x-1 focus:outline-none">
+                        <span>VILLAS</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="absolute left-0 mt-2 w-48 bg-white border border-stone-100 rounded-lg shadow-lg py-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                        <a href="index.html" class="block px-4 py-2 text-xs hover:bg-stone-50 text-stone-700 hover:text-stone-900">1-Bedroom Pool Villa</a>
+                        <a href="index.html" class="block px-4 py-2 text-xs hover:bg-stone-50 text-stone-700 hover:text-stone-900">2-Bedroom Family Villa</a>
+                    </div>
+                </div>
+                <a href="galeri.html" class="text-stone-900 font-bold border-b-2 border-stone-900 pb-1">GALERI</a>
+                <a href="#" class="hover:text-stone-900 transition">ARTIKEL & BLOG</a>
+                <a href="#" class="hover:text-stone-900 transition">KONTAK</a>
+            </div>
+            <div class="hidden md:block">
+                <a href="index.html#bookingForm" class="bg-stone-900 hover:bg-stone-800 text-white text-xs px-4 py-2 rounded font-medium tracking-wider transition">BOOK NOW</a>
+            </div>
+            <button onclick="toggleMobileMenu()" class="md:hidden text-stone-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-b border-stone-100 px-4 py-4 space-y-3 text-sm font-medium tracking-wider text-stone-600">
+            <a href="index.html" class="block py-1">BERANDA</a>
+            <a href="galeri.html" class="block py-1 font-bold text-stone-900">GALERI</a>
+            <a href="#" class="block py-1">ARTIKEL & BLOG</a>
+            <a href="#" class="block py-1">KONTAK</a>
+        </div>
+    </nav>
+
+    <header class="max-w-6xl mx-auto px-4 pt-12 pb-6 text-center">
+        <h1 class="text-4xl font-serif mb-2">Our Gallery</h1>
+        <p class="text-stone-500 max-w-md mx-auto text-sm font-light">Jelajahi setiap sudut kemewahan dan kedamaian arsitektur tropis di Ubud Haven.</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 pb-24">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            
+            <div class="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm border border-stone-100 hover:shadow-md transition duration-300" 
+                 onclick="bukaZoom('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80', 'Main Swimming Pool', 'Kolam renang infinity utama sepanjang 15 meter yang menghadap langsung ke panorama sawah hijau Ubud. Dilengkapi dengan sunbed premium untuk berjemur di sore hari.')">
+                <div class="overflow-hidden h-64">
+                    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80" alt="Pool" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-serif text-lg">Main Swimming Pool</h3>
+                    <p class="text-xs text-stone-400 mt-1 uppercase tracking-wider">Eksterior</p>
+                </div>
+            </div>
+
+            <div class="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm border border-stone-100 hover:shadow-md transition duration-300" 
+                 onclick="bukaZoom('https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80', 'Master Bedroom Loft', 'Kamar tidur utama dengan konsep minimalis-tropis, menggunakan ranjang king-size berbahan kayu jati asli, linen katun premium Jepang, dan pemandangan semi-outdoor.')">
+                <div class="overflow-hidden h-64">
+                    <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80" alt="Bedroom" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-serif text-lg">Master Bedroom Loft</h3>
+                    <p class="text-xs text-stone-400 mt-1 uppercase tracking-wider">Interior</p>
+                </div>
+            </div>
+
+            <div class="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm border border-stone-100 hover:shadow-md transition duration-300" 
+                 onclick="bukaZoom('https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=800&q=80', 'Sun Deck & Lounge', 'Area bersantai di samping kolam renang yang dikelilingi oleh tanaman tropis eksotis. Tempat sempurna untuk menikmati kelapa muda segar atau floating breakfast.')">
+                <div class="overflow-hidden h-64">
+                    <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=800&q=80" alt="Lounge" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-serif text-lg">Sun Deck & Lounge</h3>
+                    <p class="text-xs text-stone-400 mt-1 uppercase tracking-wider">Fasilitas Luar</p>
+                </div>
+            </div>
+
+            <div class="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm border border-stone-100 hover:shadow-md transition duration-300" 
+                 onclick="bukaZoom('https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=800&q=80', 'Semi-Outdoor Bathroom', 'Kamar mandi berkonsep terbuka dengan bathtub batu alam besar. Rasakan sensasi berendam mewah di bawah langit Ubud yang bertabur bintang.')">
+                <div class="overflow-hidden h-64">
+                    <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=800&q=80" alt="Bathroom" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-serif text-lg">Semi-Outdoor Bathroom</h3>
+                    <p class="text-xs text-stone-400 mt-1 uppercase tracking-wider">Interior</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="zoomModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" onclick="tutupZoom()">
+        <div class="bg-white max-w-3xl w-full rounded-2xl overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+            
+            <div class="relative h-96 bg-stone-900 flex items-center justify-center">
+                <img id="modalImg" src="" alt="Zoomed Image" class="max-w-full max-h-full object-contain">
+                <button onclick="tutupZoom()" class="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 focus:outline-none transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-6 bg-white">
+                <h2 id="modalTitle" class="text-2xl font-serif text-stone-900 mb-2"></h2>
+                <p id="modalDesc" class="text-stone-600 text-sm leading-relaxed font-light"></p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Fungsi Membuka Zoom Modal
+        function bukaZoom(urlGambar, judul, deskripsi) {
+            const modal = document.getElementById('zoomModal');
+            
+            // Set data gambar dan teks penjelasan
+            document.getElementById('modalImg').src = urlGambar;
+            document.getElementById('modalTitle').innerText = judul;
+            document.getElementById('modalDesc').innerText = deskripsi;
+            
+            // Tampilkan modal dengan efek transisi halus
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.firstElementChild.classList.remove('scale-95');
+            }, 10);
+        }
+
+        // Fungsi Menutup Zoom Modal
+        function tutupZoom() {
+            const modal = document.getElementById('zoomModal');
+            modal.classList.add('opacity-0');
+            modal.firstElementChild.classList.add('scale-95');
+            
+            // Sembunyikan setelah efek transisi selesai
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Fungsi Tombol Menu di HP
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubud Haven Luxury Villas | Direct Booking System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased">
+
+    <header class="relative h-[45vh] bg-cover bg-center flex items-center justify-center" style="background-image: url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80');">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="relative text-center text-white px-4">
+            <h1 class="text-4xl md:text-5xl font-serif mb-2">Ubud Haven</h1>
+            <p class="text-xs md:text-sm font-light tracking-widest uppercase">Luxury Private Villas Development</p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-8">
+        
+        <section class="md:col-span-2 space-y-6">
+            <h2 class="text-3xl font-serif">1-Bedroom Private Pool Villa</h2>
+            <p class="text-stone-600 leading-relaxed">
+                Nikmati ketenangan total di tengah sawah Ubud. Villa ini dilengkapi dengan kolam renang pribadi, dapur modern, semi-outdoor bathroom, dan pelayanan butler 24 jam. Cocok untuk wisatawan asing yang mencari privasi maksimal.
+            </p>
+            <div class="grid grid-cols-2 gap-4">
+                <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=600&q=80" alt="Pool" class="rounded-lg shadow-sm">
+                <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" alt="Bedroom" class="rounded-lg shadow-sm">
+            </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-stone-100 h-fit">
+            <h3 class="text-xl font-serif mb-4 pb-2 border-b">Direct Booking</h3>
+            
+            <form id="bookingForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Nama Lengkap</label>
+                    <input type="text" id="nama" required class="w-full p-2 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email</label>
+                    <input type="email" id="email" required class="w-full p-2 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500">
+                </div>
+                
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Pilih Tanggal Menginap</label>
+                    <input type="text" id="rangeTanggal" placeholder="Pilih Check-In & Check-Out" required class="w-full p-2 border rounded-md bg-stone-50 text-sm focus:outline-none focus:ring-1 focus:ring-stone-500 placeholder-stone-400">
+                </div>
+
+                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-md font-medium transition duration-200">
+                    Pesan Sekarang
+                </button>
+            </form>
+            
+            <div id="statusMessage" class="mt-4 p-3 rounded-md text-sm text-center hidden"></div>
+        </section>
+    </main>
+
+    <script>
+        // MASUKKAN KREDEASIAL SUPABASE ANDA YANG SEBELUMNYA DI SINI
+        const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4Mjc5NTA1NywiZXhwIjoyMDk4MzcxMDU3fQ.l87HFL8F4KGRhaAv64PXNfPY8awpoPItm8Y_QPS6cSY"; 
+
+        let kalenderVilla; // Variabel penampung Flatpickr
+        let tanggalTerpesan = []; // Penampung tanggal dari Supabase
+
+        // Fungsi membuat daftar rentang tanggal untuk dikunci di kalender
+        function buatRentangTanggal(start, end) {
+            let arr = [];
+            let dt = new Date(start);
+            let endDt = new Date(end);
+            while (dt <= endDt) {
+                arr.push(new Date(dt).toISOString().split('T')[0]);
+                dt.setDate(dt.getDate() + 1);
+            }
+            return arr;
+        }
+
+        // 1. FUNGSI MENGAMBIL DATA RESERVASI DARI SUPABASE
+        async function ambilDataReservasi() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?select=tanggal_checkin,tanggal_checkout`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error("Gagal mengambil data");
+
+                const data = await response.json();
+                tanggalTerpesan = [];
+
+                // Ekstrak semua tanggal di antara checkin dan checkout untuk dikunci
+                data.forEach(res => {
+                    const rentang = buatRentangTanggal(res.tanggal_checkin, res.tanggal_checkout);
+                    tanggalTerpesan = [...tanggalTerpesan, ...rentang];
+                });
+
+                // 2. INISIALISASI KALENDER DENGAN TANGGAL YANG SUDAH DIKUNCI
+                kalenderVilla = flatpickr("#rangeTanggal", {
+                    mode: "range",
+                    minDate: "today",
+                    dateFormat: "Y-m-d",
+                    disable: tanggalTerpesan, // Mengunci tanggal yang sudah dibooking orang lain
+                    locale: { firstDayOfWeek: 1 }
+                });
+
+            } catch (error) {
+                console.error("Eror Kalender:", error);
+            }
+        }
+
+        // Jalankan fungsi kalender saat halaman dimuat pertama kali
+        ambilDataReservasi();
+
+        // 3. LOGIKA PENGIRIMAN DATA SAAT FORM DI-SUBMIT
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const msg = document.getElementById('statusMessage');
+            msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-stone-100 text-stone-600";
+            msg.innerText = "Memproses pesanan...";
+            msg.classList.remove('hidden');
+
+            // Ambil data tanggal dari kalender rentang Flatpickr
+            const tanggalTerpilih = kalenderVilla.selectedDates;
+            
+            if (tanggalTerpilih.length < 2) {
+                msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700";
+                msg.innerText = "Silakan pilih tanggal Check-In dan Check-Out terlebih dahulu.";
+                return;
+            }
+
+            // Ubah format tanggal agar sesuai standar database DATE (YYYY-MM-DD)
+            const formatTanggal = (dateObj) => dateObj.toISOString().split('T')[0];
+
+            const dataBooking = {
+                nama_tamu: document.getElementById('nama').value,
+                email_tamu: document.getElementById('email').value,
+                tanggal_checkin: formatTanggal(tanggalTerpilih[0]),
+                tanggal_checkout: formatTanggal(tanggalTerpilih[1]),
+                tipe_villa: "1-Bedroom Private Pool Villa"
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(dataBooking)
+                });
+
+                if (response.ok) {
+                    msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-green-100 text-green-700";
+                    msg.innerText = "Booking Berhasil! Kalender otomatis diperbarui.";
+                    document.getElementById('bookingForm').reset();
+                    kalenderVilla.clear(); // Bersihkan pilihan kalender
+                    
+                    // Segarkan kalender untuk mengunci tanggal baru secara langsung
+                    ambilDataReservasi();
+                } else {
+                    throw new Error('Gagal mengirim data');
+                }
+            } catch (error) {
+                msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700";
+                msg.innerText = "Waduh, terjadi kesalahan. Silakan coba lagi.";
+            }
+        });
+    </script>
+</body>
+</html>
