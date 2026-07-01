@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings | Ubud Haven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased min-h-screen flex flex-col">
+
+    <nav class="bg-white border-b border-stone-100 sticky top-0 z-40 shadow-sm px-6 py-4 flex items-center justify-between">
+        <a href="/" class="text-xl font-serif tracking-widest font-bold text-stone-900">UBUD HAVEN</a>
+        <div class="flex items-center space-x-4">
+            <span id="userEmail" class="text-xs text-stone-500 font-light">Memuat akun...</span>
+            <button onclick="logout()" class="text-xs border border-stone-300 hover:border-stone-900 text-stone-600 hover:text-stone-900 px-3 py-1.5 rounded transition font-medium">
+                KELUAR
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto w-full px-4 py-10 flex-grow">
+        
+        <div class="mb-8">
+            <h1 class="text-3xl font-serif text-stone-900">Reservasi Saya</h1>
+            <p class="text-xs text-stone-400 mt-1 uppercase tracking-wider">Pantau status pemesanan villa Anda secara real-time.</p>
+        </div>
+
+        <div id="bookingContainer" class="space-y-6">
+            <div class="bg-white p-8 text-center rounded-xl border border-stone-200 text-stone-400 text-sm shadow-sm">
+                Sedang mengambil riwayat reservasi Anda...
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-stone-100 text-center py-4 text-xs text-stone-400 font-light">
+        &copy; 2026 Ubud Haven Luxury Villas Portal.
+    </footer>
+
+    <script>
+        const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
+        const SUPABASE_KEY = "MASUKKAN_ANON_KEY_ANDA"; // Masukkan Anon Key Supabase Bli di sini
+
+        // 1. PROTEKSI KEAMANAN SISI USER
+        const token = localStorage.getItem('supabase_token');
+        if (!token) {
+            alert("Silakan login terlebih dahulu untuk melihat reservasi Anda.");
+            window.location.href = '/';
+        }
+
+        let emailTamuAktif = "";
+
+        // 2. CEK SIAPA USER YANG LOGIN & AMBIL EMAILNYA
+        async function dapatkanProfilUser() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error();
+                const data = await response.json();
+                
+                emailTamuAktif = data.email;
+                document.getElementById('userEmail').innerText = emailTamuAktif;
+                
+                // Setelah email didapat, langsung cari data bookingnya
+                ambilBookingSpesifikTamu();
+                
+            } catch (error) {
+                logout();
+            }
+        }
+
+        // 3. AMBIL DATA PESANAN YANG HANYA MILIK EMAIL USER TERSEBUT
+        async function ambilBookingSpesifikTamu() {
+            const container = document.getElementById('bookingContainer');
+            
+            try {
+                // Trik API menyaring data berdasarkan email_tamu yang sama persis (eq)
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?email_tamu=eq.${encodeURIComponent(emailTamuAktif)}&order=id.desc`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+
+                if (!response.ok) throw new Error();
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-white p-12 text-center rounded-2xl border border-stone-200 shadow-sm">
+                            <svg class="w-12 h-12 mx-auto text-stone-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <h3 class="text-stone-700 font-medium font-serif text-lg">Tidak Ada Reservasi Aktif</h3>
+                            <p class="text-xs text-stone-400 mt-1 max-w-xs mx-auto">Anda belum melakukan pemesanan villa menggunakan email ini.</p>
+                            <a href="/" class="inline-block mt-4 bg-stone-900 hover:bg-stone-800 text-white text-xs px-4 py-2 rounded-lg font-medium transition shadow-sm">Pesan Villa Sekarang</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '';
+                
+                // Loop data dan buat tampilan kartu mewah untuk masing-masing pesanan
+                data.forEach(booking => {
+                    const status = booking.status || 'Pending';
+                    
+                    // Logika warna badge status dinamis
+                    let statusBadge = `<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide">⏳ MENUNGGU KONFIRMASI</span>`;
+                    if (status === 'Confirmed') {
+                        statusBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide">✅ PESANAN DIKONFIRMASI</span>`;
+                    }
+
+                    container.innerHTML += `
+                        <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden transition hover:shadow-md">
+                            <div class="p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-stone-50/50 border-b border-stone-100">
+                                <div>
+                                    <span class="text-[10px] uppercase tracking-widest text-stone-400 font-semibold block">Akomodasi</span>
+                                    <h3 class="text-xl font-serif font-bold text-stone-900 mt-0.5">${booking.tipe_villa || '1-Bedroom Private Pool Villa'}</h3>
+                                </div>
+                                <div>
+                                    ${statusBadge}
+                                </div>
+                            </div>
+                            
+                            <div class="p-6 grid grid-cols-2 gap-4 sm:gap-8 border-b border-stone-100">
+                                <div>
+                                    <span class="text-[10px] uppercase tracking-widest text-stone-400 font-semibold block">Check-In</span>
+                                    <p class="text-stone-900 font-mono font-medium text-base sm:text-lg mt-0.5 text-green-700">${booking.tanggal_checkin}</p>
+                                    <span class="text-[11px] text-stone-400">Dari Jam 14:00 WITA</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] uppercase tracking-widest text-stone-400 font-semibold block">Check-Out</span>
+                                    <p class="text-stone-900 font-mono font-medium text-base sm:text-lg mt-0.5 text-red-700">${booking.tanggal_checkout}</p>
+                                    <span class="text-[11px] text-stone-400">Sebelum Jam 12:00 WITA</span>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-stone-50/30 px-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+                                <p class="text-xs text-stone-400 text-center sm:text-left">Atas nama: <span class="font-medium text-stone-700">${booking.nama_tamu}</span></p>
+                                <div class="flex space-x-2 w-full sm:w-auto">
+                                    <a href="https://wa.me/628XXXXXXXXX" target="_blank" class="w-full sm:w-auto text-center bg-white border border-stone-200 hover:border-stone-400 text-stone-700 px-4 py-2 rounded-lg text-xs font-medium transition shadow-sm">
+                                        💬 Hubungi Bantuan Villa
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+            } catch (error) {
+                container.innerHTML = `<div class="bg-red-50 p-4 rounded-xl text-center text-red-600 text-xs border border-red-200">Gagal memuat detail reservasi Anda. Coba segarkan halaman.</div>`;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('supabase_token');
+            window.location.href = '/';
+        }
+
+        // Jalankan otomatis
+        dapatkanProfilUser();
+    </script>
+</body>
+</html>
