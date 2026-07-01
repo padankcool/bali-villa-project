@@ -13,9 +13,9 @@
 
     <nav class="bg-white/90 backdrop-blur-md border-b border-stone-100 sticky top-0 z-40 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="index.html" class="text-xl font-serif tracking-widest font-bold text-stone-900">UBUD HAVEN</a>
+            <a href="/" class="text-xl font-serif tracking-widest font-bold text-stone-900">UBUD HAVEN</a>
             <div class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wider text-stone-600">
-                <a href="index.html" class="hover:text-stone-900 transition">BERANDA</a>
+                <a href="/" class="hover:text-stone-900 transition">BERANDA</a>
                 <div class="relative group">
                     <button class="hover:text-stone-900 transition flex items-center space-x-1 focus:outline-none">
                         <span>VILLAS</span>
@@ -25,8 +25,8 @@
                         <a href="#" class="block px-4 py-2 text-xs hover:bg-stone-50 text-stone-700 hover:text-stone-900">1-Bedroom Pool Villa</a>
                     </div>
                 </div>
-                <a href="galeri.html" class="hover:text-stone-900 transition">GALERI</a>
-                <button onclick="bukaModalLogin()" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none">Login</button>
+                <a href="galeri" class="hover:text-stone-900 transition">GALERI</a>
+                <button onclick="bukaModalLogin()" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none">LOGIN</button>
             </div>
             <div class="hidden md:block">
                 <a href="#bookingForm" class="bg-stone-900 hover:bg-stone-800 text-white text-xs px-4 py-2 rounded font-medium tracking-wider transition">BOOK NOW</a>
@@ -78,19 +78,19 @@
     <div id="loginModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" onclick="tutupModalLogin()">
         <div class="bg-white max-w-sm w-full rounded-2xl p-6 shadow-2xl border border-stone-100 transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
             <div class="text-center mb-6">
-                <h3 class="text-2xl font-serif text-stone-900 font-bold tracking-wider">STAFF LOGIN</h3>
-                <p class="text-xs text-stone-400 uppercase tracking-widest mt-1">Portal Manajemen Internal</p>
+                <h3 class="text-2xl font-serif text-stone-900 font-bold tracking-wider">LOGIN PORTAL</h3>
+                <p class="text-xs text-stone-400 uppercase tracking-widest mt-1">Ubud Haven Management & Guest System</p>
             </div>
             <form id="loginForm" class="space-y-4">
                 <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email Internal</label>
+                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email</label>
                     <input type="email" id="loginEmail" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Password</label>
                     <input type="password" id="loginPassword" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
                 </div>
-                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Masuk Sistem</button>
+                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Masuk</button>
             </form>
             <div id="loginError" class="mt-4 p-2 rounded-lg text-xs text-center bg-red-50 text-red-600 hidden"></div>
         </div>
@@ -98,7 +98,7 @@
 
     <script>
         const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4Mjc5NTA1NywiZXhwIjoyMDk4MzcxMDU3fQ.l87HFL8F4KGRhaAv64PXNfPY8awpoPItm8Y_QPS6cSY"; // Masukkan Key Supabase Anda di sini
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTt4Mjc5NTA1NywiZXhwIjoyMDk4MzcxMDU3fQ.l87HFL8F4KGRhaAv64PXNfPY8awpoPItm8Y_QPS6cSY"; 
 
         let kalenderVilla;
         let tanggalTerpesan = [];
@@ -134,7 +134,6 @@
         }
         ambilDataReservasi();
 
-        // LOGIKA MEMBUKA/MENUTUP MODAL LOGIN
         function bukaModalLogin() {
             const modal = document.getElementById('loginModal');
             modal.classList.remove('hidden');
@@ -151,7 +150,7 @@
             setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
-        // LOGIKA EKSEKUSI AUTH LOGIN STAFF
+        // PERBARUAN UTAMA: LOGIKA EKSEKUSI LOGIN PINTAR MULTI-ROLE
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -160,17 +159,43 @@
             errDiv.classList.add('hidden');
 
             try {
-                const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+                // 1. Tembak Supabase Auth Token
+                const responseAuth = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
                     method: 'POST',
                     headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                const resData = await response.json();
-                if (!response.ok) throw new Error(resData.error_description || "Akun tidak terdaftar!");
                 
-                // Simpan token ke browser & lempar ke halaman admin
-                localStorage.setItem('supabase_token', resData.access_token);
-                window.location.href = 'admin.html';
+                const resAuthData = await responseAuth.json();
+                if (!responseAuth.ok) throw new Error(resAuthData.error_description || "Email atau password salah.");
+
+                // Simpan token akses ke memori browser
+                localStorage.setItem('supabase_token', resAuthData.access_token);
+
+                // 2. Cek apakah email ini terdaftar sebagai Admin di tabel user_roles publik Bli
+                const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}&select=role`, {
+                    method: 'GET',
+                    headers: { 
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+
+                const resRoleData = await responseRole.json();
+                
+                // Set default role sebagai customer
+                let userRole = 'customer'; 
+                if (responseRole.ok && resRoleData.length > 0) {
+                    userRole = resRoleData[0].role;
+                }
+
+                // 3. Pengalihan Halaman (Menggunakan Clean URLs tanpa .html)
+                if (userRole === 'admin') {
+                    window.location.href = 'admin'; // Menuju dasbor staff
+                } else {
+                    window.location.href = 'customer'; // Menuju dasbor tamu/customer
+                }
+
             } catch (error) {
                 errDiv.innerText = error.message;
                 errDiv.classList.remove('hidden');
@@ -194,7 +219,8 @@
                 email_tamu: document.getElementById('email').value,
                 tanggal_checkin: fmt(tgl[0]),
                 tanggal_checkout: fmt(tgl[1]),
-                tipe_villa: "1-Bedroom Private Pool Villa"
+                tipe_villa: "1-Bedroom Private Pool Villa",
+                status: "Pending" // Tambahkan status default saat booking baru masuk
             };
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa`, {
