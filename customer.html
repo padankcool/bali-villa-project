@@ -56,26 +56,28 @@
 
         let emailTamuAktif = "";
 
+        // ROMBAKAN PROTEKSI: Membaca data langsung dari session lokal tanpa fetch auth berulang
         async function dapatkanProfilUser() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-                    method: 'GET',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const disimpanEmail = localStorage.getItem('user_logged_email');
                 
-                if (!response.ok) throw new Error();
-                const data = await response.json();
+                if (!token || !disimpanEmail) {
+                    throw new Error("Sesi habis");
+                }
                 
-                emailTamuAktif = data.email;
+                // Set email aktif dari data lokal yang valid
+                emailTamuAktif = disimpanEmail;
                 document.getElementById('userEmail').innerText = emailTamuAktif;
                 
+                // Jalankan fungsi ambil data reservasi
                 ambilBookingSpesifikTamu();
                 
             } catch (error) {
-                logout();
+                console.error(error);
+                // Jika gagal, bersihkan data dan kembalikan ke awal
+                localStorage.removeItem('supabase_token');
+                localStorage.removeItem('user_logged_email');
+                window.location.href = 'index.html';
             }
         }
 
