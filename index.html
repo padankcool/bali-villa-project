@@ -268,11 +268,17 @@
                 
                 if (responseRole.ok) {
                     const resRoleData = await responseRole.json();
+
+                    // --- SENSOR INVESTIGASI TAMBAHAN ---
+                    console.log("Email yang diketik:", email);
+                    console.log("Data hasil respons dari tabel user_roles:", resRoleData);
+                    // ------------------------------------
+                    
                     if (resRoleData && resRoleData.length > 0) {
-                        // Pastikan huruf kecil semua untuk menghindari typo 'Admin' atau 'admin'
                         userRole = resRoleData[0].role.toLowerCase(); 
                     }
                 }
+                    console.log("Role yang diputuskan oleh sistem:", userRole);
 
                 // 3. Pengalihan halaman yang tegas berdasarkan hasil role database
                 if (userRole === 'admin') {
