@@ -232,14 +232,16 @@
         });
 
         // 2. LOGIKA SUBMIT AUTH LOGIN (PINTAR MULTI-ROLE)
+        // ROMBAKAN LOGIKA AUTH LOGIN (PINTAR MULTI-ROLE + PROTEKSI STRING)
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
+            const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
             const errDiv = document.getElementById('loginError');
             errDiv.classList.add('hidden');
 
             try {
+                // 1. Ambil Token Auth Supabase
                 const responseAuth = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
                     method: 'POST',
                     headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
@@ -249,20 +251,30 @@
                 const resAuthData = await responseAuth.json();
                 if (!responseAuth.ok) throw new Error(resAuthData.error_description || "Email atau password salah.");
 
+                // Simpan token dan email di browser tamu
                 localStorage.setItem('supabase_token', resAuthData.access_token);
+                localStorage.setItem('user_logged_email', email);
 
-                // Cek Role ke tabel publik user_roles
-                const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}&select=role`, {
+                // 2. Cek Role langsung ke tabel user_roles
+                const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}`, {
                     method: 'GET',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                    headers: { 
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
                 });
 
-                const resRoleData = await responseRole.json();
-                let userRole = 'customer'; 
-                if (responseRole.ok && resRoleData.length > 0) {
-                    userRole = resRoleData[0].role;
+                let userRole = 'customer'; // Default jika tidak ditemukan di tabel user_roles
+                
+                if (responseRole.ok) {
+                    const resRoleData = await responseRole.json();
+                    if (resRoleData && resRoleData.length > 0) {
+                        // Pastikan huruf kecil semua untuk menghindari typo 'Admin' atau 'admin'
+                        userRole = resRoleData[0].role.toLowerCase(); 
+                    }
                 }
 
+                // 3. Pengalihan halaman yang tegas berdasarkan hasil role database
                 if (userRole === 'admin') {
                     window.location.href = 'admin.html'; 
                 } else {
