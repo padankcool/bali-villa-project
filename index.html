@@ -231,17 +231,16 @@
             }
         });
 
-        // 2. LOGIKA SUBMIT AUTH LOGIN (PINTAR MULTI-ROLE)
-        // ROMBAKAN LOGIKA AUTH LOGIN (PINTAR MULTI-ROLE + PROTEKSI STRING)
+        // ROMBAKAN LOGIN UTAMA: PENGALIHAN TEGAS & AMAN
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const password = document.getElementById('loginPassword').value;
             const errDiv = document.getElementById('loginError');
             errDiv.classList.add('hidden');
 
             try {
-                // 1. Ambil Token Auth Supabase
+                // 1. Validasi Akun & Password ke Supabase Auth
                 const responseAuth = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
                     method: 'POST',
                     headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
@@ -249,20 +248,28 @@
                 });
                 
                 const resAuthData = await responseAuth.json();
+                
+                // Jika email atau password salah di Supabase Auth, langsung munculkan eror
                 if (!responseAuth.ok) throw new Error(resAuthData.error_description || "Email atau password salah.");
 
-                // Simpan token dan email di browser tamu
+                // Jika sukses login, simpan token & email ke memori browser
                 localStorage.setItem('supabase_token', resAuthData.access_token);
                 localStorage.setItem('user_logged_email', email);
 
-                // 2. Cek Role langsung ke tabel user_roles
-                const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}`, {
-                    method: 'GET',
-                    headers: { 
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
+                // 2. ATURAN PENGALIHAN HALAMAN SESUAI KEINGINAN BLI
+                if (email === 'admin1@villabali.com') {
+                    // Khusus email ini, arahkan langsung ke halaman admin Vercel Bli
+                    window.location.href = 'https://project-sewa-villa.vercel.app/admin'; 
+                } else {
+                    // Selain email di atas, semuanya dilempar ke halaman customer
+                    window.location.href = 'https://project-sewa-villa.vercel.app/customer'; 
+                }
+
+            } catch (error) {
+                errDiv.innerText = error.message;
+                errDiv.classList.remove('hidden');
+            }
+        });
 
                 let userRole = 'customer'; // Default jika tidak ditemukan di tabel user_roles
                 
