@@ -95,19 +95,24 @@
 
         if (!token || !emailTamuAktif) {
             localStorage.clear();
-            window.location.href = '/';
+            window.location.href = 'index.html';
         } else {
             document.getElementById('userEmail').innerText = emailTamuAktif;
         }
 
-        let kalenderModal;
+        let kalenderModal = null;
         let tanggalTerpesan = [];
         let tipeVillaDipilih = "";
 
         // PEMBENTUK RENTANG TANGGAL
         function buatRentangTanggal(start, end) {
-            let arr = []; let dt = new Date(start); let endDt = new Date(end);
-            while (dt <= endDt) { arr.push(new Date(dt).toISOString().split('T')[0]); dt.setDate(dt.getDate() + 1); }
+            let arr = []; 
+            let dt = new Date(start); 
+            let endDt = new Date(end);
+            while (dt <= endDt) { 
+                arr.push(new Date(dt).toISOString().split('T')[0]); 
+                dt.setDate(dt.getDate() + 1); 
+            }
             return arr;
         }
 
@@ -116,42 +121,61 @@
             tipeVillaDipilih = tipe;
             document.getElementById('modalTitle').innerText = `Pesan: ${tipe}`;
             
-            // Ambil data tanggal terbooking agar tidak bentrok
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?tipe_villa=eq.${encodeURIComponent(tipe)}&status=not.eq.Cancelled`, {
                     method: 'GET',
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
                 });
+                
                 const data = await response.json();
                 tanggalTerpesan = [];
-                data.forEach(res => {
-                    const rentang = buatRentangTanggal(res.tanggal_checkin, res.tanggal_checkout);
-                    tanggalTerpesan = [...tanggalTerpesan, ...rentang];
-                });
+                
+                // PERBAIKAN SINTAKS: Memisahkan deklarasi loop secara bersih agar tidak crash
+                if (data && data.length > 0) {
+                    data.forEach(res => {
+                        const rentang = buatRentangTanggal(res.tanggal_checkin, res.tanggal_checkout);
+                        tanggalTerpesan = [...tanggalTerpesan, ...rentang];
+                    });
+                }
 
+                // Inisialisasi kalender Flatpickr ke ID input modal
                 kalenderModal = flatpickr("#modalRangeTanggal", {
-                    mode: "range", minDate: "today", dateFormat: "Y-m-d", disable: tanggalTerpesan
+                    mode: "range", 
+                    minDate: "today", 
+                    dateFormat: "Y-m-d", 
+                    disable: tanggalTerpesan
                 });
-            } catch (e) { console.error(e); }
+                
+            } catch (e) { 
+                console.error("Gagal memuat kalender:", e); 
+            }
 
             const modal = document.getElementById('bookingModal');
             modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.remove('opacity-0'); modal.firstElementChild.classList.remove('scale-95'); }, 10);
+            setTimeout(() => { 
+                modal.classList.remove('opacity-0'); 
+                modal.firstElementChild.classList.remove('scale-95'); 
+            }, 10);
         }
 
         function tutupModalBooking() {
             const modal = document.getElementById('bookingModal');
-            modal.classList.add('opacity-0'); modal.firstElementChild.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
+            modal.classList.add('opacity-0'); 
+            modal.firstElementChild.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
         // ACTION: FORM SUBMIT RESERVASI BARU
         document.getElementById('modalBookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const dates = kalenderModal.selectedDates;
-            if (dates.length < 2) { alert("Silakan tentukan durasi Check-In dan Check-Out!"); return; }
+            if (!kalenderModal || kalenderModal.selectedDates.length < 2) { 
+                alert("Silakan tentukan durasi Check-In dan Check-Out!"); 
+                return; 
+            }
 
+            const dates = kalenderModal.selectedDates;
             const fmt = (d) => d.toISOString().split('T')[0];
+            
             const dataBooking = {
                 nama_tamu: document.getElementById('bookingNama').value,
                 email_tamu: emailTamuAktif,
@@ -159,7 +183,7 @@
                 tanggal_checkout: fmt(dates[1]),
                 tipe_villa: tipeVillaDipilih,
                 status: "Pending Payment",
-                created_at: new Date().toISOString() // Simpan penanda waktu buat timer 10 menit
+                created_at: new Date().toISOString()
             };
 
             try {
@@ -174,7 +198,9 @@
                     tutupModalBooking();
                     ambilBookingSpesifikTamu();
                 }
-            } catch (err) { alert("Terjadi gangguan jaringan."); }
+            } catch (err) { 
+                alert("Terjadi gangguan jaringan."); 
+            }
         });
 
         // AMBIL DATA & TAMPILKAN KARTU RIWAYAT + TIMER
@@ -186,7 +212,7 @@
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
                 });
                 const data = await response.json();
-                if (data.length === 0) {
+                if (!data || data.length === 0) {
                     container.innerHTML = `<div class='bg-white p-8 text-center text-stone-400 rounded-xl border text-sm shadow-sm'>Anda belum memiliki riwayat pesanan. Silakan pilih villa di sebelah kanan untuk memulai.</div>`;
                     return;
                 }
@@ -196,15 +222,14 @@
 
                 data.forEach(booking => {
                     const status = booking.status || 'Pending Payment';
-                    let badge = ""; let aksiBayar = "";
+                    let badge = ""; 
+                    let aksiBayar = "";
 
-                    // LOGIKA CRITICAL TIMER 10 MENIT UNTUK PENDING PAYMENT
                     if (status === 'Pending Payment') {
                         const waktuDibuat = new Date(booking.created_at || booking.id); 
                         const selisihMenit = Math.floor((waktuSekarang - waktuDibuat) / 60000);
 
                         if (selisihMenit >= 10) {
-                            // Eksekusi paksa pembatalan otomatis di latar belakang karena telat bayar
                             eksekusiPembatalanOtomatisBatasWaktu(booking.id);
                             return;
                         }
@@ -246,10 +271,12 @@
                         </div>
                     `;
                 });
-            } catch (err) { console.error(err); }
+            } catch (err) { 
+                console.error(err); 
+            }
         }
 
-        // SIMULASI PEMBAYARAN INSTAN (SHIFT STATUS)
+        // SIMULASI PEMBAYARAN INSTAN
         async function simulasiPembayaranTamu(id) {
             if(!confirm("Lakukan simulasi transfer bank senilai harga villa?")) return;
             try {
@@ -258,8 +285,13 @@
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'Paid (Awaiting Approval)' })
                 });
-                if(res.ok) { alert("Pembayaran Berhasil Dikirim! Mengabari admin USDI untuk melakukan verifikasi."); ambilBookingSpesifikTamu(); }
-            } catch (e) { alert("Gagal koneksi."); }
+                if(res.ok) { 
+                    alert("Pembayaran Berhasil! Mengabari admin USDI untuk verifikasi."); 
+                    ambilBookingSpesifikTamu(); 
+                }
+            } catch (e) { 
+                alert("Gagal koneksi."); 
+            }
         }
 
         // TRIGGER RESET OTOMATIS JIKA LEWAT 10 MENIT
@@ -272,9 +304,12 @@
             ambilBookingSpesifikTamu();
         }
 
-        function logout() { localStorage.clear(); window.location.href = '/'; }
+        function logout() { 
+            localStorage.clear(); 
+            window.location.href = 'index.html'; 
+        }
 
-        // Interval cek timer kadaluwarsa berkala setiap 30 detik
+        // Jalankan interval peninjauan berkala tiap 30 detik
         setInterval(ambilBookingSpesifikTamu, 30000);
         ambilBookingSpesifikTamu();
     </script>
