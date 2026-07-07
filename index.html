@@ -228,7 +228,7 @@
             }
         });
 
-        // LOGIN DENGAN PENGALIHAN TEGAS
+       // ROMBAKAN LOGIN DINAMIS BERDASARKAN DATA TABEL SUPABASE
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -237,6 +237,7 @@
             errDiv.classList.add('hidden');
 
             try {
+                // 1. Validasi Akun & Password ke Supabase Auth
                 const responseAuth = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
                     method: 'POST',
                     headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
@@ -246,15 +247,41 @@
                 const resAuthData = await responseAuth.json();
                 if (!responseAuth.ok) throw new Error(resAuthData.error_description || "Email atau password salah.");
 
+                // Simpan sesi login lokal
                 localStorage.setItem('supabase_token', resAuthData.access_token);
                 localStorage.setItem('user_logged_email', email);
 
-                // Aturan pengalihan tegas sesuai keinginan Bli
-                if (email === 'admin1@villabali.com') {
-                    window.location.href = 'https://project-sewa-villa.vercel.app/admin'; 
-                } else {
-                    window.location.href = 'https://project-sewa-villa.vercel.app/customer'; 
+                // 2. CEK PERTAMA: Apakah email ini ada di tabel user_roles (Admin/Staf)?
+                const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}`, {
+                    method: 'GET',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                });
+
+                const resRoleData = await responseRole.json();
+
+                if (responseRole.ok && resRoleData.length > 0) {
+                    // Jika data ditemukan di tabel user_roles, langsung lempar ke halaman admin
+                    window.location.href = 'https://project-sewa-villa.vercel.app/admin';
+                    return; // Stop proses di sini
                 }
+
+                // 3. CEK KEDUA: Jika tidak ada di user_roles, apakah ada di tabel reservasi_villa (Customer)?
+                const responseBooking = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?email_tamu=eq.${encodeURIComponent(email)}`, {
+                    method: 'GET',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                });
+
+                const resBookingData = await responseBooking.json();
+
+                if (responseBooking.ok && resBookingData.length > 0) {
+                    // Jika data ditemukan di tabel reservasi_villa, lempar ke halaman customer
+                    window.location.href = 'https://project-sewa-villa.vercel.app/customer';
+                    return; // Stop proses
+                }
+
+                // 4. JIKA KEDUANYA KOSONG (User baru daftar lewat Sign Up tapi belum sempat booking villa)
+                // Defaultnya tetap kita arahkan ke dashboard customer agar mereka bisa melihat halaman kosong/tombol booking
+                window.location.href = 'https://project-sewa-villa.vercel.app/customer';
 
             } catch (error) {
                 errDiv.innerText = error.message;
