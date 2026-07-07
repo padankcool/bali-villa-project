@@ -6,8 +6,8 @@
     <title>Ubud Haven Luxury Villas | Direct Booking System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
 </head>
 <body class="bg-stone-50 text-stone-800 antialiased">
 
@@ -75,6 +75,7 @@
         </section>
     </main>
 
+    <!-- MODAL PORTAL DUAL TAB -->
     <div id="loginModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" onclick="tutupModalLogin()">
         <div class="bg-white max-w-sm w-full rounded-2xl p-6 shadow-2xl border border-stone-100 transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
             
@@ -83,6 +84,7 @@
                 <button id="tabSignUp" onclick="switchAuthTab('signup')" class="w-1/2 pb-3 text-center border-b-2 border-transparent text-stone-400 hover:text-stone-600 font-serif tracking-wider">SIGN UP</button>
             </div>
 
+            <!-- FORM LOGIN -->
             <form id="loginForm" class="space-y-4">
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email</label>
@@ -95,6 +97,7 @@
                 <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Masuk Sistem</button>
             </form>
 
+            <!-- FORM SIGN UP -->
             <form id="signUpForm" class="space-y-4 hidden">
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Nama Lengkap</label>
@@ -136,22 +139,28 @@
 
         async function ambilDataReservasi() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?select=tanggal_checkin,tanggal_checkout`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?select=tanggal_checkin,tanggal_checkout&status=not.eq.Cancelled`, {
                     method: 'GET',
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
                 });
-                if (!response.ok) throw new Error("Gagal ambil data");
-                const data = await response.json();
-                tanggalTerpesan = [];
-                data.forEach(res => {
-                    const rentang = buatRentangTanggal(res.tanggal_checkin, res.tanggal_checkout);
-                    tanggalTerpesan = [...tanggalTerpesan, ...rentang];
-                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    tanggalTerpesan = [];
+                    if (data && data.length > 0) {
+                        data.forEach(res => {
+                            const rentang = buatRentangTanggal(res.tanggal_checkin, res.tanggal_checkout);
+                            tanggalTerpesan = [...tanggalTerpesan, ...rentang];
+                        });
+                    }
+                }
+
                 kalenderVilla = flatpickr("#rangeTanggal", {
                     mode: "range", minDate: "today", dateFormat: "Y-m-d", disable: tanggalTerpesan
                 });
             } catch (error) { console.error(error); }
         }
+        
         ambilDataReservasi();
 
         function bukaModalLogin() {
@@ -192,11 +201,11 @@
             }
         }
 
-        // SIGN UP
+        // FUNGSI DAFTAR AKUN CUSTOMER BARU
         document.getElementById('signUpForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const nama = document.getElementById('regNama').value;
-            const email = document.getElementById('regEmail').value;
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
             const password = document.getElementById('regPassword').value;
             const errDiv = document.getElementById('loginError');
             const successDiv = document.getElementById('regSuccess');
@@ -228,7 +237,7 @@
             }
         });
 
-       // ROMBAKAN LOGIN DINAMIS BERDASARKAN DATA TABEL SUPABASE
+        // FUNGSI LOGIN (DENGAN JALUR TOL SUPER ADMIN)
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -237,7 +246,7 @@
             errDiv.classList.add('hidden');
 
             try {
-                // 1. Validasi Akun & Password ke Supabase Auth
+                // 1. Validasi Akun ke Supabase Auth
                 const responseAuth = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
                     method: 'POST',
                     headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
@@ -247,40 +256,35 @@
                 const resAuthData = await responseAuth.json();
                 if (!responseAuth.ok) throw new Error(resAuthData.error_description || "Email atau password salah.");
 
-                // Simpan sesi login lokal
-                localStorage.setItem('supabase_token', resAuthData.access_token);
+                const tokenUser = resAuthData.access_token;
+                localStorage.setItem('supabase_token', tokenUser);
                 localStorage.setItem('user_logged_email', email);
 
-                // 2. CEK PERTAMA: Apakah email ini ada di tabel user_roles (Admin/Staf)?
+                // ==========================================
+                // 2. JALUR TOL KHUSUS SUPER ADMIN
+                // ==========================================
+                if (email === 'admin1@villabali.com') {
+                    window.location.href = 'https://project-sewa-villa.vercel.app/admin';
+                    return; 
+                }
+
+                // ==========================================
+                // 3. CEK DINAMIS UNTUK STAF LAIN 
+                // ==========================================
                 const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}`, {
                     method: 'GET',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${tokenUser}` } 
                 });
 
-                const resRoleData = await responseRole.json();
-
-                if (responseRole.ok && resRoleData.length > 0) {
-                    // Jika data ditemukan di tabel user_roles, langsung lempar ke halaman admin
-                    window.location.href = 'https://project-sewa-villa.vercel.app/admin';
-                    return; // Stop proses di sini
+                if (responseRole.ok) {
+                    const resRoleData = await responseRole.json();
+                    if (resRoleData && resRoleData.length > 0) {
+                        window.location.href = 'https://project-sewa-villa.vercel.app/admin';
+                        return; 
+                    }
                 }
 
-                // 3. CEK KEDUA: Jika tidak ada di user_roles, apakah ada di tabel reservasi_villa (Customer)?
-                const responseBooking = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?email_tamu=eq.${encodeURIComponent(email)}`, {
-                    method: 'GET',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                });
-
-                const resBookingData = await responseBooking.json();
-
-                if (responseBooking.ok && resBookingData.length > 0) {
-                    // Jika data ditemukan di tabel reservasi_villa, lempar ke halaman customer
-                    window.location.href = 'https://project-sewa-villa.vercel.app/customer';
-                    return; // Stop proses
-                }
-
-                // 4. JIKA KEDUANYA KOSONG (User baru daftar lewat Sign Up tapi belum sempat booking villa)
-                // Defaultnya tetap kita arahkan ke dashboard customer agar mereka bisa melihat halaman kosong/tombol booking
+                // 4. Jika bukan super admin & tidak ada di tabel role -> Customer
                 window.location.href = 'https://project-sewa-villa.vercel.app/customer';
 
             } catch (error) {
@@ -289,39 +293,47 @@
             }
         });
 
-        // BOOKING FORM
+        // FORM BOOKING DI HALAMAN UTAMA
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const msg = document.getElementById('statusMessage');
-            const tgl = kalenderVilla.selectedDates;
-            if (tgl.length < 2) {
+            
+            if (!kalenderVilla || kalenderVilla.selectedDates.length < 2) {
                 msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700";
                 msg.innerText = "Pilih rentang tanggal check-in & check-out.";
                 msg.classList.remove('hidden');
                 return;
             }
+
+            const tgl = kalenderVilla.selectedDates;
             const fmt = (d) => d.toISOString().split('T')[0];
+            
             const dataBooking = {
                 nama_tamu: document.getElementById('nama').value,
-                email_tamu: document.getElementById('email').value,
+                email_tamu: document.getElementById('email').value.trim().toLowerCase(),
                 tanggal_checkin: fmt(tgl[0]),
                 tanggal_checkout: fmt(tgl[1]),
                 tipe_villa: "1-Bedroom Private Pool Villa",
-                status: "Pending" 
+                status: "Pending Payment",
+                created_at: new Date().toISOString()
             };
+            
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa`, {
                     method: 'POST',
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify(dataBooking)
                 });
-                if(res.ok) {
+                
+                if(res.ok || res.status === 201 || res.status === 204) {
                     msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-green-100 text-green-700";
-                    msg.innerText = "Pemesanan Berhasil!";
+                    msg.innerText = "Pemesanan Berhasil Dicatat! Silakan Login untuk melakukan pembayaran.";
                     document.getElementById('bookingForm').reset();
                     kalenderVilla.clear();
                     ambilDataReservasi();
-                } else { throw new Error(); }
+                } else { 
+                    throw new Error("Gagal menyimpan data."); 
+                }
             } catch (error) {
                 msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700";
                 msg.innerText = "Terjadi kesalahan sistem.";
@@ -329,3 +341,4 @@
         });
     </script>
 </body>
+</html>
