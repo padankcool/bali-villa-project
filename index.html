@@ -118,7 +118,6 @@
 
     <script>
         const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
-        // KEY SUDAH DIPERBAIKI UTAL (MENGHAPUS HURUF 't' DAN 'x' KECIL YANG MERUSAK STRING)
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTUwNTcsImV4cCI6MjA5ODM3MTA1N30.bC-GO4HHdBo4zxNfJZ4BDmIPfQKlzA6d_9g_-ThPBoc"; 
 
         let kalenderVilla;
@@ -169,11 +168,9 @@
             modal.classList.add('opacity-0');
             modal.firstElementChild.classList.add('scale-95');
             setTimeout(() => modal.classList.add('hidden'), 300);
-            // Reset form ke tab login semula saat modal ditutup
             switchAuthTab('login');
         }
 
-        // FUNGSI BERPINDAH TAB (LOGIN <-> SIGN UP)
         function switchAuthTab(type) {
             const tabLogin = document.getElementById('tabLogin');
             const tabSignUp = document.getElementById('tabSignUp');
@@ -195,7 +192,7 @@
             }
         }
 
-        // 1. LOGIKA SUBMIT SIGN UP (DAFTAR AKUN CUSTOMER BARU)
+        // SIGN UP
         document.getElementById('signUpForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const nama = document.getElementById('regNama').value;
@@ -231,7 +228,7 @@
             }
         });
 
-        // ROMBAKAN LOGIN UTAMA: PENGALIHAN TEGAS & AMAN
+        // LOGIN DENGAN PENGALIHAN TEGAS
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -240,7 +237,6 @@
             errDiv.classList.add('hidden');
 
             try {
-                // 1. Validasi Akun & Password ke Supabase Auth
                 const responseAuth = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
                     method: 'POST',
                     headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
@@ -248,20 +244,15 @@
                 });
                 
                 const resAuthData = await responseAuth.json();
-                
-                // Jika email atau password salah di Supabase Auth, langsung munculkan eror
                 if (!responseAuth.ok) throw new Error(resAuthData.error_description || "Email atau password salah.");
 
-                // Jika sukses login, simpan token & email ke memori browser
                 localStorage.setItem('supabase_token', resAuthData.access_token);
                 localStorage.setItem('user_logged_email', email);
 
-                // 2. ATURAN PENGALIHAN HALAMAN SESUAI KEINGINAN BLI
+                // Aturan pengalihan tegas sesuai keinginan Bli
                 if (email === 'admin1@villabali.com') {
-                    // Khusus email ini, arahkan langsung ke halaman admin Vercel Bli
                     window.location.href = 'https://project-sewa-villa.vercel.app/admin'; 
                 } else {
-                    // Selain email di atas, semuanya dilempar ke halaman customer
                     window.location.href = 'https://project-sewa-villa.vercel.app/customer'; 
                 }
 
@@ -271,36 +262,7 @@
             }
         });
 
-                let userRole = 'customer'; // Default jika tidak ditemukan di tabel user_roles
-                
-                if (responseRole.ok) {
-                    const resRoleData = await responseRole.json();
-
-                    // --- SENSOR INVESTIGASI TAMBAHAN ---
-                    console.log("Email yang diketik:", email);
-                    console.log("Data hasil respons dari tabel user_roles:", resRoleData);
-                    // ------------------------------------
-                    
-                    if (resRoleData && resRoleData.length > 0) {
-                        userRole = resRoleData[0].role.toLowerCase(); 
-                    }
-                }
-                    console.log("Role yang diputuskan oleh sistem:", userRole);
-
-                // 3. Pengalihan halaman yang tegas berdasarkan hasil role database
-                if (userRole === 'admin') {
-                    window.location.href = 'admin.html'; 
-                } else {
-                    window.location.href = 'customer.html'; 
-                }
-
-            } catch (error) {
-                errDiv.innerText = error.message;
-                errDiv.classList.remove('hidden');
-            }
-        });
-
-        // FORM BOOKING TAMU
+        // BOOKING FORM
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const msg = document.getElementById('statusMessage');
@@ -340,4 +302,3 @@
         });
     </script>
 </body>
-</html>
