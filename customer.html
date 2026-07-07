@@ -6,9 +6,6 @@
     <title>Guest Portal | Ubud Haven</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
@@ -61,7 +58,7 @@
                 <div class="p-4 flex-grow flex flex-col justify-between">
                     <div>
                         <h3 class="font-serif font-bold text-lg text-stone-900">Presidential 2-Bedroom Suite</h3>
-                        <p class="text-xs text-stone-500 mt-1 leading-relaxed">Pilihan termewah untuk keluarga. Ruang tamu super luas, paviliun bersantai, pemandangan lembah sungai jurang hijau.</p>
+                        <p class="text-xs text-stone-500 mt-1 leading-relaxed">Pilihan termewah untuk keluarga. Ruang tamu super luas, paviliun bersantai, pemandangan lembah hijau.</p>
                     </div>
                     <button onclick="bukaModalBooking('Presidential 2-Bedroom Suite')" class="w-full mt-4 bg-stone-900 hover:bg-stone-800 text-white text-xs py-2.5 rounded font-medium transition tracking-wider">BOOK VILLA</button>
                 </div>
@@ -104,7 +101,6 @@
         let tanggalTerpesan = [];
         let tipeVillaDipilih = "";
 
-        // PEMBENTUK RENTANG TANGGAL
         function buatRentangTanggal(start, end) {
             let arr = []; 
             let dt = new Date(start); 
@@ -116,7 +112,6 @@
             return arr;
         }
 
-        // KONTROL POPUP KALENDER
         async function bukaModalBooking(tipe) {
             tipeVillaDipilih = tipe;
             document.getElementById('modalTitle').innerText = `Pesan: ${tipe}`;
@@ -130,7 +125,6 @@
                 const data = await response.json();
                 tanggalTerpesan = [];
                 
-                // PERBAIKAN SINTAKS: Memisahkan deklarasi loop secara bersih agar tidak crash
                 if (data && data.length > 0) {
                     data.forEach(res => {
                         const rentang = buatRentangTanggal(res.tanggal_checkin, res.tanggal_checkout);
@@ -138,7 +132,6 @@
                     });
                 }
 
-                // Inisialisasi kalender Flatpickr ke ID input modal
                 kalenderModal = flatpickr("#modalRangeTanggal", {
                     mode: "range", 
                     minDate: "today", 
@@ -165,45 +158,6 @@
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
-        // ACTION: FORM SUBMIT RESERVASI BARU
-        document.getElementById('modalBookingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!kalenderModal || kalenderModal.selectedDates.length < 2) { 
-                alert("Silakan tentukan durasi Check-In dan Check-Out!"); 
-                return; 
-            }
-
-            const dates = kalenderModal.selectedDates;
-            const fmt = (d) => d.toISOString().split('T')[0];
-            
-            const dataBooking = {
-                nama_tamu: document.getElementById('bookingNama').value,
-                email_tamu: emailTamuAktif,
-                tanggal_checkin: fmt(dates[0]),
-                tanggal_checkout: fmt(dates[1]),
-                tipe_villa: tipeVillaDipilih,
-                status: "Pending Payment",
-                created_at: new Date().toISOString()
-            };
-
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa`, {
-                    method: 'POST',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataBooking)
-                });
-                if(res.ok) {
-                    alert("Reservasi berhasil dicatat! Silakan lakukan pembayaran dalam waktu 10 menit.");
-                    document.getElementById('modalBookingForm').reset();
-                    tutupModalBooking();
-                    ambilBookingSpesifikTamu();
-                }
-            } catch (err) { 
-                alert("Terjadi gangguan jaringan."); 
-            }
-        });
-
-        // AMBIL DATA & TAMPILKAN KARTU RIWAYAT + TIMER
         async function ambilBookingSpesifikTamu() {
             const container = document.getElementById('bookingContainer');
             try {
@@ -243,7 +197,7 @@
                         `;
                     } else if (status === 'Paid (Awaiting Approval)') {
                         badge = `<span class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 rounded-full text-xs font-semibold">🔄 MENUNGGU PERSETUJUAN ADMIN</span>`;
-                        aksiBayar = `<span class="text-xs text-stone-400 italic">Menunggu admin USDI memeriksa bukti bayar Anda</span>`;
+                        aksiBayar = `<span class="text-xs text-stone-400 italic">Menunggu admin memeriksa bukti bayar Anda</span>`;
                     } else if (status === 'Confirmed') {
                         badge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-xs font-semibold">✅ BOOKING VALID & DIACC</span>`;
                         aksiBayar = `<span class="text-xs text-emerald-600 font-medium">Selamat Menikmati Liburan di Ubud Haven! 🎉</span>`;
@@ -276,7 +230,43 @@
             }
         }
 
-        // SIMULASI PEMBAYARAN INSTAN
+        document.getElementById('modalBookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!kalenderModal || kalenderModal.selectedDates.length < 2) { 
+                alert("Silakan tentukan durasi Check-In dan Check-Out!"); 
+                return; 
+            }
+
+            const dates = kalenderModal.selectedDates;
+            const fmt = (d) => d.toISOString().split('T')[0];
+            
+            const dataBooking = {
+                nama_tamu: document.getElementById('bookingNama').value,
+                email_tamu: emailTamuAktif,
+                tanggal_checkin: fmt(dates[0]),
+                tanggal_checkout: fmt(dates[1]),
+                tipe_villa: tipeVillaDipilih,
+                status: "Pending Payment",
+                created_at: new Date().toISOString()
+            };
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa`, {
+                    method: 'POST',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataBooking)
+                });
+                if(res.ok) {
+                    alert("Reservasi berhasil dicatat! Silakan lakukan pembayaran dalam waktu 10 menit.");
+                    document.getElementById('modalBookingForm').reset();
+                    tutupModalBooking();
+                    ambilBookingSpesifikTamu();
+                }
+            } catch (err) { 
+                alert("Terjadi gangguan jaringan."); 
+            }
+        });
+
         async function simulasiPembayaranTamu(id) {
             if(!confirm("Lakukan simulasi transfer bank senilai harga villa?")) return;
             try {
@@ -286,7 +276,7 @@
                     body: JSON.stringify({ status: 'Paid (Awaiting Approval)' })
                 });
                 if(res.ok) { 
-                    alert("Pembayaran Berhasil! Mengabari admin USDI untuk verifikasi."); 
+                    alert("Pembayaran Berhasil! Mengabari admin untuk verifikasi."); 
                     ambilBookingSpesifikTamu(); 
                 }
             } catch (e) { 
@@ -294,7 +284,6 @@
             }
         }
 
-        // TRIGGER RESET OTOMATIS JIKA LEWAT 10 MENIT
         async function eksekusiPembatalanOtomatisBatasWaktu(id) {
             await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?id=eq.${id}`, {
                 method: 'PATCH',
@@ -309,7 +298,6 @@
             window.location.href = 'index.html'; 
         }
 
-        // Jalankan interval peninjauan berkala tiap 30 detik
         setInterval(ambilBookingSpesifikTamu, 30000);
         ambilBookingSpesifikTamu();
     </script>
