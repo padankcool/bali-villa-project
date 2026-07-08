@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <a href="galeri" class="hover:text-stone-900 transition">GALERI</a>
-                <button onclick="bukaModalLogin()" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none">LOGIN</button>
+                <button id="navLoginBtn" onclick="bukaModalLogin()" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none">LOGIN</button>
             </div>
             <div class="hidden md:block">
                 <a href="#bookingForm" class="bg-stone-900 hover:bg-stone-800 text-white text-xs px-4 py-2 rounded font-medium tracking-wider transition">BOOK NOW</a>
@@ -75,7 +75,6 @@
         </section>
     </main>
 
-    <!-- MODAL PORTAL DUAL TAB -->
     <div id="loginModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" onclick="tutupModalLogin()">
         <div class="bg-white max-w-sm w-full rounded-2xl p-6 shadow-2xl border border-stone-100 transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
             
@@ -84,7 +83,6 @@
                 <button id="tabSignUp" onclick="switchAuthTab('signup')" class="w-1/2 pb-3 text-center border-b-2 border-transparent text-stone-400 hover:text-stone-600 font-serif tracking-wider">SIGN UP</button>
             </div>
 
-            <!-- FORM LOGIN -->
             <form id="loginForm" class="space-y-4">
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email</label>
@@ -97,7 +95,6 @@
                 <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Masuk Sistem</button>
             </form>
 
-            <!-- FORM SIGN UP -->
             <form id="signUpForm" class="space-y-4 hidden">
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Nama Lengkap</label>
@@ -120,64 +117,55 @@
     </div>
 
     <script>
-
-        // =========================================================================
-        // 1. SATPAM PINTU DALAM: BLOKIR CUSTOMER YANG ISENG MASUK URL ADMIN
-        // =========================================================================
-        const token = localStorage.getItem('supabase_token');
-        const emailPengguna = localStorage.getItem('user_logged_email');
-
-        // Jika tidak ada token sama sekali, lempar ke depan
-        if (!token || !emailPengguna) {
-            localStorage.clear();
-            window.location.href = '/';
-        } else {
-            // Jika ada token, CEK DULU LEVELNYA SEBELUM MENAMPILKAN DATA
-            verifikasiAksesAdmin(emailPengguna, token);
-        }
-
-        async function verifikasiAksesAdmin(email, tokenUser) {
-            // A. Jalur Tol Super Admin (Langsung Lolos)
-            if (email === 'admin1@villabali.com') {
-                document.getElementById('adminEmail').innerText = email; // Ubah ID ini jika di HTML Bli namanya beda
-                return; 
-            }
-
-            // B. Cek dinamis ke tabel user_roles untuk staf lainnya
-            try {
-                const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}`, {
-                    method: 'GET',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${tokenUser}` } 
-                });
-
-                if (responseRole.ok) {
-                    const resRoleData = await responseRole.json();
-                    if (resRoleData && resRoleData.length > 0) {
-                        document.getElementById('adminEmail').innerText = email; // Lolos (Staf)
-                        return; 
-                    }
-                }
-                
-                // C. JIKA BUKAN SUPER ADMIN & TIDAK ADA DI TABEL ROLE (FIX DIA CUSTOMER)
-                alert("🚨 AKSES DITOLAK! Anda tidak memiliki izin untuk masuk ke Dasbor Staf.");
-                window.location.href = '/customer'; // Tendang balik ke kamarnya!
-
-            } catch (error) {
-                window.location.href = '/';
-            }
-        }
-        // =========================================================================
-        // BATAS SATPAM PINTU DALAM
-        // =========================================================================
-
-        // ... (SISA KODE JAVASCRIPT BLI YANG LAMA BIARKAN TETAP DI BAWAH SINI) ...
-        // Misalnya fungsi ambilDataReservasiAdmin(), dll.
-        
         const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTUwNTcsImV4cCI6MjA5ODM3MTA1N30.bC-GO4HHdBo4zxNfJZ4BDmIPfQKlzA6d_9g_-ThPBoc"; 
 
         let kalenderVilla;
         let tanggalTerpesan = [];
+
+        // CEK SESI: JIKA SUDAH LOGIN, UBAH TOMBOL DAN AUTOFILL FORM BOOKING
+        const tokenUserAktif = localStorage.getItem('supabase_token');
+        const emailUserAktif = localStorage.getItem('user_logged_email');
+        
+        if (tokenUserAktif && emailUserAktif) {
+            const btnNavLogin = document.getElementById('navLoginBtn');
+            if (btnNavLogin) {
+                btnNavLogin.innerText = "PORTAL SAYA";
+                btnNavLogin.classList.add("text-stone-900", "font-bold");
+                
+                // Ubah fungsi klik agar tidak memunculkan modal login, melainkan langsung redirect
+                btnNavLogin.onclick = async () => {
+                    btnNavLogin.innerText = "MEMUAT...";
+                    
+                    if (emailUserAktif === 'admin1@villabali.com') {
+                        window.location.href = 'https://project-sewa-villa.vercel.app/admin';
+                        return;
+                    }
+                    
+                    try {
+                        const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(emailUserAktif)}`, {
+                            method: 'GET',
+                            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${tokenUserAktif}` } 
+                        });
+                        if (responseRole.ok) {
+                            const resRoleData = await responseRole.json();
+                            if (resRoleData && resRoleData.length > 0) {
+                                window.location.href = 'https://project-sewa-villa.vercel.app/admin';
+                                return; 
+                            }
+                        }
+                        window.location.href = 'https://project-sewa-villa.vercel.app/customer';
+                    } catch (e) {
+                        window.location.href = 'https://project-sewa-villa.vercel.app/customer';
+                    }
+                };
+            }
+            
+            // Autofill form pemesanan
+            const inputEmail = document.getElementById('email');
+            if(inputEmail) inputEmail.value = emailUserAktif;
+        }
+
 
         function buatRentangTanggal(start, end) {
             let arr = [];
@@ -380,7 +368,7 @@
                 
                 if(res.ok || res.status === 201 || res.status === 204) {
                     msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-green-100 text-green-700";
-                    msg.innerText = "Pemesanan Berhasil Dicatat! Silakan Login untuk melakukan pembayaran.";
+                    msg.innerText = "Pemesanan Berhasil Dicatat! Silakan menuju PORTAL SAYA untuk melakukan pembayaran.";
                     document.getElementById('bookingForm').reset();
                     kalenderVilla.clear();
                     ambilDataReservasi();
