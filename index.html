@@ -6,7 +6,7 @@
     <title>Admin Dashboard | Ubud Haven</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { display: none; }
+        html, body { display: none; visibility: hidden; }
     </style>
 </head>
 <body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
@@ -49,7 +49,7 @@
                     </thead>
                     <tbody id="adminTableBody">
                         <tr>
-                            <td colspan="5" class="p-8 text-center text-stone-400">Sedang mengambil data reservasi...</td>
+                            <td colspan="5" class="p-8 text-center text-stone-400">Sedang memvalidasi hak akses admin...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -65,23 +65,24 @@
         const emailAktif = localStorage.getItem('user_logged_email');
 
         // ========================================================
-        // 🚨 FITUR SATPAM MUTAKHIR: CEK OTORISASI SEBELUM RENDER PAGE
+        // 🚨 LOGIKA SATPAM KETAT: ANTI-INTIP & LANGSUNG TENDANG
         // ========================================================
         async function jalankanSatpamAdmin() {
+            // 1. Cek isi sesi login dasar
             if (!token || !emailAktif) {
                 localStorage.clear();
-                window.location.href = '/';
+                window.location.href = 'index.html';
                 return;
             }
 
-            // Jalur Tol Khusus Super Admin Bli (Langsung Lolos)
+            // 2. Jalur Tol Khusus Super Admin (Langsung Lolos)
             if (emailAktif === 'admin1@villabali.com') {
                 bukaAksesHalaman();
                 return;
             }
 
+            // 3. Verifikasi Sesi Token secara Dinamis ke Database
             try {
-                // Cek apakah email terdaftar di tabel user_roles
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(emailAktif)}`, {
                     method: 'GET',
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${token}` }
@@ -89,11 +90,10 @@
 
                 const data = await response.json();
 
-                if (response.ok && data && data.length > 0) {
-                    // Terbukti staf/admin -> Lolos gembok!
+                // Pastikan data ditemukan di tabel user_roles
+                if (response.ok && Array.isArray(data) && data.length > 0) {
                     bukaAksesHalaman();
                 } else {
-                    // Customer nakal ganti URL -> Tendang keras!
                     tendangCustomerNakal();
                 }
             } catch (error) {
@@ -102,25 +102,36 @@
         }
 
         function bukaAksesHalaman() {
-            document.body.style.display = 'block'; // Tampilkan layout HTML
-            document.getElementById('adminEmail').innerText = emailAktif;
-            ambilSemuaReservasi(); // Load data tabel
+            // Lepas gembok CSS agar halaman bisa terlihat semestinya
+            document.documentElement.style.display = 'block';
+            document.documentElement.style.visibility = 'visible';
+            document.body.style.display = 'block';
+            document.body.style.visibility = 'visible';
+            
+            const emailLabel = document.getElementById('adminEmail');
+            if (emailLabel) emailLabel.innerText = emailAktif;
+            
+            // Jalankan fungsi penarik data database
+            ambilSemuaReservasi();
         }
 
         function tendangCustomerNakal() {
-            // Tidak perlu pakai alert lagi, langsung lempar secara senyap & elegan ke halaman rejected
-            window.location.href = 'rejected.html'; 
+            // Hancurkan sisa rendering dokumen di browser, lalu alihkan ke page rejected
+            document.documentElement.innerHTML = '';
+            window.location.href = 'rejected.html';
         }
 
-        // Jalankan Satpam Detik Ini Juga
+        // Jalankan instruksi interogasi saat file ini mulai diproses browser
         jalankanSatpamAdmin();
 
 
         // ========================================================
-        // 📊 MANAJEMEN DATA TABEL RESERVASI
+        // 📊 OPERASI DATA RESERVASI
         // ========================================================
         async function ambilSemuaReservasi() {
             const tbody = document.getElementById('adminTableBody');
+            if (!tbody) return;
+
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?order=id.desc`, {
                     method: 'GET',
@@ -140,7 +151,7 @@
 
                     if (booking.status === 'Pending Payment') {
                         badgeStatus = `<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-medium">⏳ Menunggu Bayar</span>`;
-                        tombolAksi = `<span class="text-xs text-stone-400 italic">Menunggu customer klik bayar (10 mnt)</span>`;
+                        tombolAksi = `<span class="text-xs text-stone-400 italic">Menunggu pembayaran (10 mnt)</span>`;
                     } else if (booking.status === 'Paid (Awaiting Approval)') {
                         badgeStatus = `<span class="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full text-xs font-bold animate-pulse">🔄 Perlu ACC</span>`;
                         tombolAksi = `
@@ -180,7 +191,6 @@
             }
         }
 
-        // PROSES UP-DATE KEPUTUSAN STATUS RESERVASI
         async function prosesKeputusanBooking(id, statusBaru) {
             const pesanConf = statusBaru === 'Confirmed' ? "ACC dan terbitkan E-ticket untuk pesanan ini?" : "Tolak dan batalkan pesanan ini?";
             if (!confirm(pesanConf)) return;
@@ -205,7 +215,7 @@
 
         function logout() { 
             localStorage.clear(); 
-            window.location.href = '/'; 
+            window.location.href = 'index.html'; 
         }
     </script>
 </body>
