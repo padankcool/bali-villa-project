@@ -9,6 +9,59 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
+
+    <style>
+        body { display: none; } 
+    </style>
+
+    <script>
+        const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTUwNTcsImV4cCI6MjA5ODM3MTA1N30.bC-GO4HHdBo4zxNfJZ4BDmIPfQKlzA6d_9g_-ThPBoc"; 
+
+        const token = localStorage.getItem('supabase_token');
+        const emailAktif = localStorage.getItem('user_logged_email');
+
+        // Jika belum login sama sekali, tendang ke halaman depan
+        if (!token || !emailAktif) {
+            window.location.href = '/';
+        } else {
+            // Jika sudah login, interogasi dulu jabatannya!
+            validasiAksesAdmin();
+        }
+
+        async function validasiAksesAdmin() {
+            // Jalur Tol Super Admin (Langsung Lolos & Tampilkan Halaman)
+            if (emailAktif === 'admin1@villabali.com') {
+                document.body.style.display = 'block'; 
+                return; 
+            }
+
+            try {
+                // Cek apakah email ini terdaftar sebagai staf di tabel user_roles
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(emailAktif)}`, {
+                    method: 'GET',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        // Dia adalah staf, Tampilkan Halaman!
+                        document.body.style.display = 'block';
+                        return; 
+                    }
+                }
+                
+                // JIKA SAMPAI DI SINI = DIA CUSTOMER BIASA YG ISENG GANTI URL!
+                alert("Akses Ditolak! Halaman ini khusus staf Ubud Haven.");
+                window.location.href = 'https://project-sewa-villa.vercel.app/customer';
+
+            } catch (error) {
+                window.location.href = '/';
+            }
+        }
+    </script>
+    
 <body class="bg-stone-50 text-stone-800 antialiased">
 
     <nav class="bg-white/90 backdrop-blur-md border-b border-stone-100 sticky top-0 z-40 shadow-sm">
