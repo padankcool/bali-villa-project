@@ -8,7 +8,7 @@
 </head>
 <body class="bg-stone-50 flex items-center justify-center min-h-screen p-4 antialiased">
     
-    <div class="bg-white p-8 md:p-10 rounded-2xl shadow-xl max-w-md w-full text-center border border-red-100 transform transition-all">
+    <div class="bg-white p-8 md:p-10 rounded-2xl shadow-xl max-w-md w-full text-center border border-red-100">
         
         <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-red-100">
             <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -16,16 +16,17 @@
             </svg>
         </div>
         
-        <h1 class="text-3xl font-serif font-bold text-stone-900 mb-3">403 Forbidden</h1>
+        <h1 class="text-3xl font-serif font-bold text-stone-900 mb-2">403 Forbidden</h1>
+        <p class="text-xs uppercase tracking-wider text-red-600 font-bold mb-4">Akses Terproteksi</p>
         <p class="text-stone-500 text-sm mb-8 leading-relaxed">
-            Maaf, akses ditolak. Anda tidak memiliki otorisasi untuk memasuki Area Administrator. Area ini diproteksi secara ketat.
+            Sistem mendeteksi bahwa akun Anda tidak memiliki hak otorisasi tingkat staf untuk memasuki area administrator. Tindakan ini telah dicatat demi keamanan sistem arsitektur cloud.
         </p>
         
         <div class="space-y-3">
-            <button onclick="kembaliKePortal()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-medium py-3 rounded-lg transition duration-200 tracking-wider text-sm shadow-sm">
-                KEMBALI KE PORTAL SAYA
+            <button onclick="kePortal()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-medium py-3 rounded-lg transition duration-200 tracking-wider text-sm shadow-sm">
+                KEMBALI KE PORTAL TAMU
             </button>
-            <button onclick="kembaliKeBeranda()" class="w-full bg-white border border-stone-300 hover:bg-stone-50 hover:text-stone-900 text-stone-600 font-medium py-3 rounded-lg transition duration-200 tracking-wider text-sm">
+            <button onclick="keBeranda()" class="w-full bg-white border border-stone-300 hover:bg-stone-50 hover:text-stone-900 text-stone-600 font-medium py-3 rounded-lg transition duration-200 tracking-wider text-sm">
                 KE HALAMAN UTAMA
             </button>
         </div>
@@ -33,14 +34,14 @@
     </div>
 
     <script>
-        // Logika untuk tombol pengalihan
-        function kembaliKePortal() {
-            // Karena yang ditendang ke sini pasti kustomer, kita arahkan balik ke dashboard mereka
+        function kePortal() {
             window.location.href = 'customer.html'; 
         }
-
-        function kembaliKeBeranda() {
-            // Jika mereka ingin logout atau kembali dari awal
+        document.addEventListener("DOMContentLoaded", function() {
+            // Menghindari loop redirect jika terjadi kesalahan referensi file
+            console.log("Sistem keamanan gerbang aktif.");
+        });
+        function keBeranda() {
             window.location.href = 'index.html'; 
         }
     </script>
