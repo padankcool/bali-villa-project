@@ -3,67 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Staff Dashboard | Ubud Haven</title>
+    <title>Admin Dashboard | Ubud Haven</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        html, body { display: none; visibility: hidden; }
+    </style>
 </head>
-<body class="bg-stone-100 text-stone-800 antialiased min-h-screen flex flex-col">
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
 
     <nav class="bg-stone-900 text-white px-6 py-4 flex items-center justify-between shadow-md">
         <div class="flex items-center space-x-3">
             <span class="text-xl font-serif tracking-widest font-bold">UBUD HAVEN</span>
-            <span class="bg-stone-700 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded text-stone-300">Staff Portal v2</span>
+            <span class="bg-amber-600 text-[10px] uppercase font-bold px-2 py-0.5 rounded tracking-wider">ADMIN PORTAL</span>
         </div>
         <div class="flex items-center space-x-4">
-            <span id="adminEmail" class="text-xs text-stone-400 font-light">Loading admin...</span>
-            <button onclick="logout()" class="bg-red-700 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded transition font-medium">LOGOUT</button>
+            <span id="adminEmail" class="text-xs text-stone-400 font-mono">Memuat...</span>
+            <button onclick="logout()" class="text-xs bg-stone-800 hover:bg-stone-700 border border-stone-700 px-3 py-1.5 rounded transition font-medium">
+                KELUAR
+            </button>
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto w-full px-4 py-8 flex-grow">
-        
-        <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-serif text-stone-900">Sistem Manajemen Reservasi</h1>
-                <p class="text-xs text-stone-500 mt-1">Kelola reservasi, ubah jadwal menginap, dan pantau status akomodasi villa.</p>
+                <h1 class="text-3xl font-serif text-stone-900 font-bold">Kelola Reservasi Villa</h1>
+                <p class="text-xs text-stone-500 mt-1 uppercase tracking-wider">Daftar permintaan booking masuk dari sistem kustomer.</p>
             </div>
-            <button onclick="ambilDaftarTamu()" class="w-fit bg-stone-900 hover:bg-stone-800 text-white text-xs px-4 py-2 rounded-lg font-medium shadow transition">
-                🔄 Refresh & Sinkronisasi Data
+            <button onclick="ambilSemuaReservasi()" class="self-start bg-white border border-stone-300 hover:border-stone-900 text-stone-700 hover:text-stone-900 px-4 py-2 text-xs rounded-lg font-medium transition shadow-sm flex items-center gap-2">
+                🔄 Segarkan Data
             </button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-stone-200">
-                <p class="text-xs uppercase tracking-wider text-stone-400 font-medium">Total Booking</p>
-                <h3 id="statTotal" class="text-2xl font-bold text-stone-900 mt-1">0</h3>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-stone-200">
-                <p class="text-xs uppercase tracking-wider text-emerald-500 font-medium">Confirmed / Lunas</p>
-                <h3 id="statBayar" class="text-2xl font-bold text-emerald-600 mt-1">0</h3>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-stone-200">
-                <p class="text-xs uppercase tracking-wider text-amber-500 font-medium">Pending / Menunggu</p>
-                <h3 id="statPending" class="text-2xl font-bold text-amber-600 mt-1">0</h3>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
+        <div class="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm border-collapse">
-                    <thead class="bg-stone-50 border-b border-stone-200 text-stone-500 text-xs uppercase tracking-wider font-medium">
-                        <tr>
-                            <th class="p-4">Nama Tamu</th>
-                            <th class="p-4">Kontak / Email</th>
-                            <th class="p-4">Check-In</th>
-                            <th class="p-4">Check-Out</th>
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-stone-50 border-b border-stone-200 text-stone-500 text-xs uppercase tracking-wider font-semibold">
+                            <th class="p-4">ID / Tamu</th>
+                            <th class="p-4">Tipe Villa</th>
+                            <th class="p-4">Tanggal Menginap</th>
                             <th class="p-4">Status</th>
-                            <th class="p-4 text-center">Aksi Operasional</th>
+                            <th class="p-4 text-center">Aksi Konfirmasi</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelTamu" class="divide-y divide-stone-100 text-stone-700">
+                    <tbody id="adminTableBody">
                         <tr>
-                            <td colspan="6" class="p-8 text-center text-stone-400 text-sm">Sedang memuat data reservasi...</td>
+                            <td colspan="5" class="p-8 text-center text-stone-400">Sedang memvalidasi hak akses admin...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -71,199 +57,166 @@
         </div>
     </main>
 
-    <div id="editTanggalModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white max-w-sm w-full rounded-2xl p-6 shadow-2xl border border-stone-100">
-            <h3 class="text-lg font-serif mb-2 text-stone-900">Reschedule Tanggal Menginap</h3>
-            <p id="editTamuNama" class="text-xs text-stone-500 mb-4">Tamu: -</p>
-            
-            <input type="hidden" id="editBookingId">
-            <div class="mb-4">
-                <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Pilih Tanggal Baru</label>
-                <input type="text" id="editRangeTanggal" placeholder="Pilih Check-In & Check-Out Baru" required class="w-full p-2.5 border rounded-lg bg-stone-50 text-sm focus:outline-none">
-            </div>
-
-            <div class="flex space-x-2">
-                <button onclick="tutupModalEdit()" class="w-1/2 bg-stone-200 text-stone-700 p-2.5 rounded-lg text-sm font-medium transition">Batal</button>
-                <button onclick="simpanTanggalBaru()" class="w-1/2 bg-stone-900 text-white p-2.5 rounded-lg text-sm font-medium transition">Simpan Perubahan</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4Mjc5NTA1NywiZXhwIjoyMDk4MzcxMDU3fQ.l87HFL8F4KGRhaAv64PXNfPY8awpoPItm8Y_QPS6cSY"; // Masukkan Anon Key Anda di sini
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTUwNTcsImV4cCI6MjA5ODM3MTA1N30.bC-GO4HHdBo4zxNfJZ4BDmIPfQKlzA6d_9g_-ThPBoc"; 
 
         const token = localStorage.getItem('supabase_token');
-        if (!token) {
-            alert("Akses ditolak! Silakan login terlebih dahulu.");
-            window.location.href = 'index.html';
-        }
+        const emailAktif = localStorage.getItem('user_logged_email');
 
-        let flatpickrEdit;
+        // ========================================================
+        // 🚨 LOGIKA SATPAM KETAT: ANTI-INTIP & LANGSUNG TENDANG
+        // ========================================================
+        async function jalankanSatpamAdmin() {
+            // 1. Cek isi sesi login dasar
+            if (!token || !emailAktif) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+                return;
+            }
 
-        async function dapatkanProfilAdmin() {
+            // 2. Jalur Tol Khusus Super Admin (Langsung Lolos)
+            if (emailAktif === 'admin1@villabali.com') {
+                bukaAksesHalaman();
+                return;
+            }
+
+            // 3. Verifikasi Sesi Token secara Dinamis ke Database
             try {
-                const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(emailAktif)}`, {
                     method: 'GET',
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${token}` }
                 });
-                if (!response.ok) throw new Error();
+
                 const data = await response.json();
-                document.getElementById('adminEmail').innerText = data.email;
-            } catch (error) { logout(); }
+
+                // Pastikan data ditemukan di tabel user_roles
+                if (response.ok && Array.isArray(data) && data.length > 0) {
+                    bukaAksesHalaman();
+                } else {
+                    tendangCustomerNakal();
+                }
+            } catch (error) {
+                tendangCustomerNakal();
+            }
         }
 
-        // AMBIL & HITUNG DATA + STATISTIK
-        async function ambilDaftarTamu() {
-            const tbody = document.getElementById('tabelTamu');
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?select=*&order=id.desc`, {
-                    method: 'GET',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                });
+        function bukaAksesHalaman() {
+            // Lepas gembok CSS agar halaman bisa terlihat semestinya
+            document.documentElement.style.display = 'block';
+            document.documentElement.style.visibility = 'visible';
+            document.body.style.display = 'block';
+            document.body.style.visibility = 'visible';
+            
+            const emailLabel = document.getElementById('adminEmail');
+            if (emailLabel) emailLabel.innerText = emailAktif;
+            
+            // Jalankan fungsi penarik data database
+            ambilSemuaReservasi();
+        }
 
-                if (!response.ok) throw new Error();
+        function tendangCustomerNakal() {
+            // Hancurkan sisa rendering dokumen di browser, lalu alihkan ke page rejected
+            document.documentElement.innerHTML = '';
+            window.location.href = 'rejected.html';
+        }
+
+        // Jalankan instruksi interogasi saat file ini mulai diproses browser
+        jalankanSatpamAdmin();
+
+
+        // ========================================================
+        // 📊 OPERASI DATA RESERVASI
+        // ========================================================
+        async function ambilSemuaReservasi() {
+            const tbody = document.getElementById('adminTableBody');
+            if (!tbody) return;
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?order=id.desc`, {
+                    method: 'GET',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${token}` }
+                });
                 const data = await response.json();
 
-                // Hitung data untuk Insight Box
-                document.getElementById('statTotal').innerText = data.length;
-                document.getElementById('statBayar').innerText = data.filter(t => t.status === 'Confirmed').length;
-                document.getElementById('statPending').innerText = data.filter(t => t.status !== 'Confirmed').length;
-
-                if (data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-stone-400 text-sm">Belum ada pemesanan masuk.</td></tr>`;
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-stone-400">Belum ada data booking masuk dari kustomer.</td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = '';
-                data.forEach(tamu => {
-                    const statusBooking = tamu.status || 'Pending';
-                    const selectConfirmed = statusBooking === 'Confirmed' ? 'selected' : '';
-                    const selectPending = statusBooking === 'Pending' ? 'selected' : '';
+                data.forEach(booking => {
+                    let badgeStatus = "";
+                    let tombolAksi = "";
+
+                    if (booking.status === 'Pending Payment') {
+                        badgeStatus = `<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-medium">⏳ Menunggu Bayar</span>`;
+                        tombolAksi = `<span class="text-xs text-stone-400 italic">Menunggu pembayaran (10 mnt)</span>`;
+                    } else if (booking.status === 'Paid (Awaiting Approval)') {
+                        badgeStatus = `<span class="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full text-xs font-bold animate-pulse">🔄 Perlu ACC</span>`;
+                        tombolAksi = `
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="prosesKeputusanBooking(${booking.id}, 'Confirmed')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded font-medium transition shadow-sm">✅ ACC</button>
+                                <button onclick="prosesKeputusanBooking(${booking.id}, 'Cancelled')" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs px-3 py-1.5 rounded font-medium transition">❌ Tolak</button>
+                            </div>
+                        `;
+                    } else if (booking.status === 'Confirmed') {
+                        badgeStatus = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full text-xs font-bold">✅ Selesai / Di-ACC</span>`;
+                        tombolAksi = `<span class="text-xs text-emerald-600 font-medium">Lunas & E-Ticket Aktif</span>`;
+                    } else if (booking.status === 'Cancelled') {
+                        badgeStatus = `<span class="bg-stone-100 text-stone-400 border border-stone-200 px-2.5 py-1 rounded-full text-xs font-medium">❌ Dibatalkan</span>`;
+                        tombolAksi = `<span class="text-xs text-stone-400">Gagal / Kadaluwarsa</span>`;
+                    }
 
                     tbody.innerHTML += `
-                        <tr class="hover:bg-stone-50 transition text-xs sm:text-sm">
-                            <td class="p-4 font-medium text-stone-900">
-                                ${tamu.nama_tamu}
-                                <div class="text-[10px] text-stone-400 font-light">${tamu.tipe_villa || '1-Bedroom Villa'}</div>
-                            </td>
+                        <tr class="border-b border-stone-100 hover:bg-stone-50/50 transition">
                             <td class="p-4">
-                                <span class="block text-stone-600">${tamu.email_tamu}</span>
-                                <a href="https://wa.me/${tamu.no_wa || ''}" target="_blank" class="inline-block mt-0.5 text-[10px] text-emerald-600 font-medium hover:underline">💬 Chat WA</a>
+                                <span class="font-mono font-bold text-stone-900 block">#UBD-${booking.id}</span>
+                                <span class="text-xs text-stone-800 font-medium">${booking.nama_tamu}</span>
+                                <span class="text-[10px] text-stone-400 block font-mono">${booking.email_tamu}</span>
                             </td>
-                            <td class="p-4 font-mono text-green-700">${tamu.tanggal_checkin}</td>
-                            <td class="p-4 font-mono text-red-700">${tamu.tanggal_checkout}</td>
-                            <td class="p-4">
-                                <select onchange="ubahStatusPembayaran(${tamu.id}, this.value)" class="p-1 border text-xs rounded bg-stone-50 font-medium focus:outline-none">
-                                    <option value="Pending" ${selectPending}>⏳ Pending</option>
-                                    <option value="Confirmed" ${selectConfirmed}>✅ Confirmed</option>
-                                </select>
+                            <td class="p-4 font-medium text-stone-700">${booking.tipe_villa}</td>
+                            <td class="p-4 font-mono text-xs">
+                                <span class="text-emerald-700 font-bold">${booking.tanggal_checkin}</span>
+                                <span class="text-stone-400 mx-1">s/d</span>
+                                <span class="text-red-700 font-bold">${booking.tanggal_checkout}</span>
                             </td>
-                            <td class="p-4 text-center space-x-1">
-                                <button onclick="bukaModalEdit(${tamu.id}, '${tamu.nama_tamu}', '${tamu.tanggal_checkin}', '${tamu.tanggal_checkout}')" class="bg-white hover:bg-stone-100 text-stone-700 px-2 py-1 rounded text-xs transition border">
-                                    Ubah Jadwal
-                                </button>
-                                <button onclick="hapusReservasi(${tamu.id})" class="bg-stone-50 hover:bg-red-50 text-stone-400 hover:text-red-600 px-2 py-1 rounded text-xs transition border border-transparent hover:border-red-200">
-                                    Hapus
-                                </button>
-                            </td>
+                            <td class="p-4">${badgeStatus}</td>
+                            <td class="p-4 text-center">${tombolAksi}</td>
                         </tr>
                     `;
                 });
-            } catch (error) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500 text-sm">Gagal memuat data dari server.</td></tr>`;
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-600">Gagal memuat data dari database Supabase.</td></tr>`;
             }
         }
 
-        // FUNGSI UBAH STATUS PEMBAYARAN DI SUPABASE
-        async function ubahStatusPembayaran(id, statusBaru) {
+        async function prosesKeputusanBooking(id, statusBaru) {
+            const pesanConf = statusBaru === 'Confirmed' ? "ACC dan terbitkan E-ticket untuk pesanan ini?" : "Tolak dan batalkan pesanan ini?";
+            if (!confirm(pesanConf)) return;
+
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?id=eq.${id}`, {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?id=eq.${id}`, {
                     method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: statusBaru })
                 });
-                if (response.ok) {
-                    ambilDaftarTamu(); // Refresh info kartu statistik
-                } else { throw new Error(); }
-            } catch (error) { alert("Gagal mengubah status."); }
-        }
 
-        // LOGIKA MODAL BUKA-TUTUP UBAH JADWAL
-        function bukaModalEdit(id, nama, inDate, outDate) {
-            document.getElementById('editBookingId').value = id;
-            document.getElementById('editTamuNama').innerText = `Tamu: ${nama}`;
-            document.getElementById('editTanggalModal').classList.remove('hidden');
-            
-            flatpickrEdit = flatpickr("#editRangeTanggal", {
-                mode: "range",
-                minDate: "today",
-                dateFormat: "Y-m-d",
-                defaultDate: [inDate, outDate]
-            });
-        }
-
-        function tutupModalEdit() {
-            document.getElementById('editTanggalModal').classList.add('hidden');
-        }
-
-        // SIMPAN TANGGAL RESCHEDULE BARU KE DATABASE
-        async function simpanTanggalBaru() {
-            const id = document.getElementById('editBookingId').value;
-            const tgl = flatpickrEdit.selectedDates;
-            
-            if (tgl.length < 2) {
-                alert("Pilih tanggal check-in & check-out yang lengkap!");
-                return;
+                if (res.ok) {
+                    alert(statusBaru === 'Confirmed' ? "Pemesanan berhasil di-ACC!" : "Pemesanan berhasil ditolak.");
+                    ambilSemuaReservasi();
+                } else {
+                    alert("Gagal memperbarui status.");
+                }
+            } catch (e) {
+                alert("Gangguan koneksi database.");
             }
-
-            const fmt = (d) => d.toISOString().split('T')[0];
-            const dataBaru = {
-                tanggal_checkin: fmt(tgl[0]),
-                tanggal_checkout: fmt(tgl[1])
-            };
-
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?id=eq.${id}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dataBaru)
-                });
-
-                if (response.ok) {
-                    alert("Jadwal menginap berhasil diubah!");
-                    tutupModalEdit();
-                    ambilDaftarTamu();
-                } else { throw new Error(); }
-            } catch (error) { alert("Gagal memperbarui jadwal."); }
         }
 
-        async function hapusReservasi(id) {
-            if (!confirm("Apakah Anda yakin ingin menghapus data booking ini?")) return;
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?id=eq.${id}`, {
-                    method: 'DELETE',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                });
-                if (response.ok) { ambilDaftarTamu(); } else { throw new Error(); }
-            } catch (error) { alert("Gagal menghapus."); }
+        function logout() { 
+            localStorage.clear(); 
+            window.location.href = 'index.html'; 
         }
-
-        function logout() {
-            localStorage.removeItem('supabase_token');
-            window.location.href = 'index.html';
-        }
-
-        dapatkanProfilAdmin();
-        ambilDaftarTamu();
     </script>
 </body>
 </html>
