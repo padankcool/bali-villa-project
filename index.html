@@ -120,6 +120,59 @@
     </div>
 
     <script>
+
+        // =========================================================================
+        // 1. SATPAM PINTU DALAM: BLOKIR CUSTOMER YANG ISENG MASUK URL ADMIN
+        // =========================================================================
+        const token = localStorage.getItem('supabase_token');
+        const emailPengguna = localStorage.getItem('user_logged_email');
+
+        // Jika tidak ada token sama sekali, lempar ke depan
+        if (!token || !emailPengguna) {
+            localStorage.clear();
+            window.location.href = '/';
+        } else {
+            // Jika ada token, CEK DULU LEVELNYA SEBELUM MENAMPILKAN DATA
+            verifikasiAksesAdmin(emailPengguna, token);
+        }
+
+        async function verifikasiAksesAdmin(email, tokenUser) {
+            // A. Jalur Tol Super Admin (Langsung Lolos)
+            if (email === 'admin1@villabali.com') {
+                document.getElementById('adminEmail').innerText = email; // Ubah ID ini jika di HTML Bli namanya beda
+                return; 
+            }
+
+            // B. Cek dinamis ke tabel user_roles untuk staf lainnya
+            try {
+                const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}`, {
+                    method: 'GET',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${tokenUser}` } 
+                });
+
+                if (responseRole.ok) {
+                    const resRoleData = await responseRole.json();
+                    if (resRoleData && resRoleData.length > 0) {
+                        document.getElementById('adminEmail').innerText = email; // Lolos (Staf)
+                        return; 
+                    }
+                }
+                
+                // C. JIKA BUKAN SUPER ADMIN & TIDAK ADA DI TABEL ROLE (FIX DIA CUSTOMER)
+                alert("🚨 AKSES DITOLAK! Anda tidak memiliki izin untuk masuk ke Dasbor Staf.");
+                window.location.href = '/customer'; // Tendang balik ke kamarnya!
+
+            } catch (error) {
+                window.location.href = '/';
+            }
+        }
+        // =========================================================================
+        // BATAS SATPAM PINTU DALAM
+        // =========================================================================
+
+        // ... (SISA KODE JAVASCRIPT BLI YANG LAMA BIARKAN TETAP DI BAWAH SINI) ...
+        // Misalnya fungsi ambilDataReservasiAdmin(), dll.
+        
         const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTUwNTcsImV4cCI6MjA5ODM3MTA1N30.bC-GO4HHdBo4zxNfJZ4BDmIPfQKlzA6d_9g_-ThPBoc"; 
 
