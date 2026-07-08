@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <a href="galeri" class="hover:text-stone-900 transition">GALERI</a>
-                <button onclick="bukaModalLogin()" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none">LOGIN</button>
+                <button id="loginMenuBtn" onclick="bukaModalLogin()" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none">LOGIN</button>
             </div>
             <div class="hidden md:block">
                 <a href="#bookingForm" class="bg-stone-900 hover:bg-stone-800 text-white text-xs px-4 py-2 rounded font-medium tracking-wider transition">BOOK NOW</a>
@@ -122,6 +122,38 @@
 
         let kalenderVilla;
         let tanggalTerpesan = [];
+
+        // ========================================================
+        // LOGIKA BARU: DETEKSI STATUS LOGIN SECARA AMAN (UX CHECK)
+        // ========================================================
+        document.addEventListener("DOMContentLoaded", () => {
+            const tokenUserAktif = localStorage.getItem('supabase_token');
+            const emailUserAktif = localStorage.getItem('user_logged_email');
+            const btnNavLogin = document.getElementById('loginMenuBtn');
+
+            if (tokenUserAktif && emailUserAktif) {
+                if (btnNavLogin) {
+                    // Ubah teks tombol menjadi PORTAL SAYA agar terlihat profesional
+                    btnNavLogin.innerText = "PORTAL SAYA";
+                    btnNavLogin.className = "hover:text-stone-900 transition font-bold text-stone-900 uppercase tracking-wider focus:outline-none";
+                    
+                    // Alihkan fungsi klik agar langsung menuju ke dashboard yang sesuai
+                    btnNavLogin.onclick = () => {
+                        if (emailUserAktif === 'admin1@villabali.com') {
+                            window.location.href = 'https://project-sewa-villa.vercel.app/admin';
+                        } else {
+                            window.location.href = 'https://project-sewa-villa.vercel.app/customer';
+                        }
+                    };
+                }
+
+                // Masukkan email kustomer secara otomatis ke form booking utama (Autofill)
+                const formEmailInput = document.getElementById('email');
+                if (formEmailInput) {
+                    formEmailInput.value = emailUserAktif;
+                }
+            }
+        });
 
         function buatRentangTanggal(start, end) {
             let arr = [];
