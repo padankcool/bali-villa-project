@@ -14,6 +14,7 @@
     <nav class="bg-white/90 backdrop-blur-md border-b border-stone-100 sticky top-0 z-40 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="/" class="text-xl font-serif tracking-widest font-bold text-stone-900">UBUD HAVEN</a>
+            
             <div class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wider text-stone-600">
                 <a href="/" class="hover:text-stone-900 transition">BERANDA</a>
                 <div class="relative group">
@@ -27,10 +28,14 @@
                     </div>
                 </div>
                 <a href="galeri" class="hover:text-stone-900 transition">GALERI</a>
-                <button id="loginMenuBtn" onclick="bukaModalLogin()" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none">LOGIN</button>
             </div>
-            <div class="hidden md:block">
+            
+            <div class="hidden md:flex items-center space-x-6">
                 <a href="#bookingForm" class="bg-stone-900 hover:bg-stone-800 text-white text-xs px-4 py-2 rounded font-medium tracking-wider transition">BOOK NOW</a>
+                
+                <div id="authNavArea">
+                    <button onclick="bukaModalLogin()" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none text-sm">LOGIN</button>
+                </div>
             </div>
         </div>
     </nav>
@@ -132,34 +137,57 @@
         let tanggalTerpesan = [];
 
         // ========================================================
-        // LOGIKA: DETEKSI STATUS LOGIN SECARA AMAN (UX CHECK)
+        // 🔄 LOGIKA BARU: RENDER PROFILE DROPDOWN DI KANAN ATAS
         // ========================================================
         document.addEventListener("DOMContentLoaded", () => {
             const tokenUserAktif = localStorage.getItem('supabase_token');
             const emailUserAktif = localStorage.getItem('user_logged_email');
-            const btnNavLogin = document.getElementById('loginMenuBtn');
+            const authNavArea = document.getElementById('authNavArea');
 
             if (tokenUserAktif && emailUserAktif) {
-                if (btnNavLogin) {
-                    btnNavLogin.innerText = "PORTAL SAYA";
-                    btnNavLogin.className = "hover:text-stone-900 transition font-bold text-stone-900 uppercase tracking-wider focus:outline-none";
-                    
-                    btnNavLogin.onclick = () => {
-                        if (emailUserAktif === 'admin1@villabali.com') {
-                            window.location.href = 'https://project-sewa-villa.vercel.app/admin';
-                        } else {
-                            window.location.href = 'https://project-sewa-villa.vercel.app/customer';
-                        }
-                    };
+                if (authNavArea) {
+                    // Suntikkan Komponen Dropdown Menggantikan Tombol Login Polos
+                    authNavArea.innerHTML = `
+                        <div class="relative group">
+                            <button class="flex items-center space-x-1 bg-stone-100 hover:bg-stone-200 text-stone-900 font-mono text-xs px-3 py-2 rounded-lg font-bold tracking-wider transition focus:outline-none shadow-sm">
+                                <span>${emailUserAktif}</span>
+                                <svg class="w-3 h-3 text-stone-500 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white border border-stone-100 rounded-lg shadow-lg py-1 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 z-50">
+                                <button onclick="kePortalSesuaiRole()" class="w-full text-left block px-4 py-2.5 text-xs text-stone-700 hover:bg-stone-50 hover:text-stone-900 font-semibold transition">
+                                    📋 Reservasi Saya
+                                </button>
+                                <div class="border-t border-stone-100"></div>
+                                <button onclick="logoutIndex()" class="w-full text-left block px-4 py-2.5 text-xs text-red-600 hover:bg-red-50 font-semibold transition">
+                                    🚪 Keluar
+                                </button>
+                            </div>
+                        </div>
+                    `;
                 }
 
-                // Autofill email kustomer
+                // Otomatis isikan email tamu ke form isian booking di bawah
                 const formEmailInput = document.getElementById('email');
                 if (formEmailInput) {
                     formEmailInput.value = emailUserAktif;
                 }
             }
         });
+
+        function kePortalSesuaiRole() {
+            const emailUserAktif = localStorage.getItem('user_logged_email');
+            if (emailUserAktif === 'admin1@villabali.com') {
+                window.location.href = 'https://project-sewa-villa.vercel.app/admin';
+            } else {
+                window.location.href = 'https://project-sewa-villa.vercel.app/customer';
+            }
+        }
+
+        function logoutIndex() {
+            localStorage.clear();
+            window.location.reload(); // Refresh halaman agar navbar kembali ke kondisi awal
+        }
+
 
         function buatRentangTanggal(start, end) {
             let arr = [];
@@ -172,15 +200,9 @@
             return arr;
         }
 
-        // ========================================================
-        // LOGIKA: TARIK TANGGAL DIBLOKIR BERDASARKAN VILLA YG DIPILIH
-        // ========================================================
         async function ambilDataReservasi() {
-            // Ambil tipe villa dari dropdown
             const tipeVillaPilihan = document.getElementById('pilihanVilla').value;
-            
             try {
-                // Hanya fetch data booking yang tipe villanya SAMA dengan yang dipilih di dropdown
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?select=tanggal_checkin,tanggal_checkout&status=not.eq.Cancelled&tipe_villa=eq.${encodeURIComponent(tipeVillaPilihan)}`, {
                     method: 'GET',
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
@@ -197,19 +219,13 @@
                     }
                 }
 
-                // Hapus instance kalender lama jika ada, buat yang baru dengan tanggal terblokir yg spesifik
                 if(kalenderVilla) kalenderVilla.destroy();
-                
                 kalenderVilla = flatpickr("#rangeTanggal", {
-                    mode: "range", 
-                    minDate: "today", 
-                    dateFormat: "Y-m-d", 
-                    disable: tanggalTerpesan
+                    mode: "range", minDate: "today", dateFormat: "Y-m-d", disable: tanggalTerpesan
                 });
             } catch (error) { console.error(error); }
         }
         
-        // Panggil pertama kali saat halaman dimuat
         ambilDataReservasi();
 
         function bukaModalLogin() {
@@ -250,7 +266,7 @@
             }
         }
 
-        // FUNGSI DAFTAR AKUN CUSTOMER BARU
+        // FUNGSI SIGN UP
         document.getElementById('signUpForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const nama = document.getElementById('regNama').value;
@@ -286,7 +302,7 @@
             }
         });
 
-        // FUNGSI LOGIN (DENGAN JALUR TOL SUPER ADMIN)
+        // FUNGSI LOGIN
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -334,7 +350,7 @@
             }
         });
 
-        // FORM BOOKING DI HALAMAN UTAMA (DINAMIS SESUAI DROPDOWN)
+        // FORM SUBMIT BOOKING
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const msg = document.getElementById('statusMessage');
@@ -354,13 +370,12 @@
                 email_tamu: document.getElementById('email').value.trim().toLowerCase(),
                 tanggal_checkin: fmt(tgl[0]),
                 tanggal_checkout: fmt(tgl[1]),
-                tipe_villa: document.getElementById('pilihanVilla').value, // AMBIL DARI DROPDOWN
+                tipe_villa: document.getElementById('pilihanVilla').value,
                 status: "Pending Payment",
                 created_at: new Date().toISOString()
             };
             
             try {
-                // Catatan: Supabase_KEY digunakan di sini karena ini form publik, siapapun bisa submit
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa`, {
                     method: 'POST',
                     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
@@ -369,16 +384,16 @@
                 
                 if(res.ok || res.status === 201 || res.status === 204) {
                     msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-green-100 text-green-700";
-                    msg.innerText = "Pemesanan Berhasil Dicatat! Silakan menuju PORTAL SAYA untuk melanjutkan pembayaran.";
+                    msg.innerText = "Pemesanan Berhasil Dicatat! Silakan buka menu profil Anda di kanan atas, lalu pilih 'Reservasi Saya' untuk melakukan pembayaran.";
                     document.getElementById('bookingForm').reset();
                     kalenderVilla.clear();
-                    ambilDataReservasi(); // Refresh kalender
+                    ambilDataReservasi();
                 } else { 
                     throw new Error("Gagal menyimpan data."); 
                 }
             } catch (error) {
                 msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700";
-                msg.innerText = "Terjadi kesalahan sistem saat menghubungi database.";
+                msg.innerText = "Terjadi kesalahan sistem.";
             }
         });
     </script>
