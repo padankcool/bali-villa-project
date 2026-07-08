@@ -101,4 +101,241 @@
                     <input type="text" id="regNama" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-50
+                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email Tamu</label>
+                    <input type="email" id="regEmail" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Buat Password</label>
+                    <input type="password" id="regPassword" required placeholder="Minimal 6 karakter" class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
+                </div>
+                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Daftar Akun Baru</button>
+            </form>
+
+            <div id="loginError" class="mt-4 p-2 rounded-lg text-xs text-center bg-red-50 text-red-600 hidden"></div>
+            <div id="regSuccess" class="mt-4 p-2 rounded-lg text-xs text-center bg-green-50 text-green-700 hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTUwNTcsImV4cCI6MjA5ODM3MTA1N30.bC-GO4HHdBo4zxNfJZ4BDmIPfQKlzA6d_9g_-ThPBoc"; 
+
+        let kalenderVilla;
+        let tanggalTerpesan = [];
+
+        function buatRentangTanggal(start, end) {
+            let arr = [];
+            let dt = new Date(start);
+            let endDt = new Date(end);
+            while (dt <= endDt) {
+                arr.push(new Date(dt).toISOString().split('T')[0]);
+                dt.setDate(dt.getDate() + 1);
+            }
+            return arr;
+        }
+
+        async function ambilDataReservasi() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?select=tanggal_checkin,tanggal_checkout&status=not.eq.Cancelled`, {
+                    method: 'GET',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    tanggalTerpesan = [];
+                    if (data && data.length > 0) {
+                        data.forEach(res => {
+                            const rentang = buatRentangTanggal(res.tanggal_checkin, res.tanggal_checkout);
+                            tanggalTerpesan = [...tanggalTerpesan, ...rentang];
+                        });
+                    }
+                }
+
+                kalenderVilla = flatpickr("#rangeTanggal", {
+                    mode: "range", minDate: "today", dateFormat: "Y-m-d", disable: tanggalTerpesan
+                });
+            } catch (error) { console.error(error); }
+        }
+        
+        ambilDataReservasi();
+
+        function bukaModalLogin() {
+            const modal = document.getElementById('loginModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.firstElementChild.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function tutupModalLogin() {
+            const modal = document.getElementById('loginModal');
+            modal.classList.add('opacity-0');
+            modal.firstElementChild.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+            switchAuthTab('login');
+        }
+
+        function switchAuthTab(type) {
+            const tabLogin = document.getElementById('tabLogin');
+            const tabSignUp = document.getElementById('tabSignUp');
+            const loginForm = document.getElementById('loginForm');
+            const signUpForm = document.getElementById('signUpForm');
+            document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('regSuccess').classList.add('hidden');
+
+            if(type === 'login') {
+                tabLogin.className = "w-1/2 pb-3 text-center border-b-2 border-stone-950 text-stone-950 font-serif tracking-wider";
+                tabSignUp.className = "w-1/2 pb-3 text-center border-b-2 border-transparent text-stone-400 hover:text-stone-600 font-serif tracking-wider";
+                loginForm.classList.remove('hidden');
+                signUpForm.classList.add('hidden');
+            } else {
+                tabSignUp.className = "w-1/2 pb-3 text-center border-b-2 border-stone-950 text-stone-950 font-serif tracking-wider";
+                tabLogin.className = "w-1/2 pb-3 text-center border-b-2 border-transparent text-stone-400 hover:text-stone-600 font-serif tracking-wider";
+                signUpForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        // FUNGSI DAFTAR AKUN CUSTOMER BARU
+        document.getElementById('signUpForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nama = document.getElementById('regNama').value;
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const password = document.getElementById('regPassword').value;
+            const errDiv = document.getElementById('loginError');
+            const successDiv = document.getElementById('regSuccess');
+            
+            errDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+                    method: 'POST',
+                    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: email, 
+                        password: password,
+                        options: { data: { full_name: nama } }
+                    })
+                });
+
+                const resData = await response.json();
+                if (!response.ok) throw new Error(resData.error_description || resData.message || "Gagal mendaftar.");
+
+                successDiv.innerText = "Pendaftaran Berhasil! Silakan beralih ke tab LOGIN.";
+                successDiv.classList.remove('hidden');
+                document.getElementById('signUpForm').reset();
+
+            } catch (error) {
+                errDiv.innerText = error.message;
+                errDiv.classList.remove('hidden');
+            }
+        });
+
+        // FUNGSI LOGIN (DENGAN JALUR TOL SUPER ADMIN)
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            const errDiv = document.getElementById('loginError');
+            errDiv.classList.add('hidden');
+
+            try {
+                // 1. Validasi Akun ke Supabase Auth
+                const responseAuth = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+                    method: 'POST',
+                    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const resAuthData = await responseAuth.json();
+                if (!responseAuth.ok) throw new Error(resAuthData.error_description || "Email atau password salah.");
+
+                const tokenUser = resAuthData.access_token;
+                localStorage.setItem('supabase_token', tokenUser);
+                localStorage.setItem('user_logged_email', email);
+
+                // ==========================================
+                // 2. JALUR TOL KHUSUS SUPER ADMIN
+                // ==========================================
+                if (email === 'admin1@villabali.com') {
+                    window.location.href = 'https://project-sewa-villa.vercel.app/admin';
+                    return; 
+                }
+
+                // ==========================================
+                // 3. CEK DINAMIS UNTUK STAF LAIN 
+                // ==========================================
+                const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}`, {
+                    method: 'GET',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${tokenUser}` } 
+                });
+
+                if (responseRole.ok) {
+                    const resRoleData = await responseRole.json();
+                    if (resRoleData && resRoleData.length > 0) {
+                        window.location.href = 'https://project-sewa-villa.vercel.app/admin';
+                        return; 
+                    }
+                }
+
+                // 4. Jika bukan super admin & tidak ada di tabel role -> Customer
+                window.location.href = 'https://project-sewa-villa.vercel.app/customer';
+
+            } catch (error) {
+                errDiv.innerText = error.message;
+                errDiv.classList.remove('hidden');
+            }
+        });
+
+        // FORM BOOKING DI HALAMAN UTAMA
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('statusMessage');
+            
+            if (!kalenderVilla || kalenderVilla.selectedDates.length < 2) {
+                msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700";
+                msg.innerText = "Pilih rentang tanggal check-in & check-out.";
+                msg.classList.remove('hidden');
+                return;
+            }
+
+            const tgl = kalenderVilla.selectedDates;
+            const fmt = (d) => d.toISOString().split('T')[0];
+            
+            const dataBooking = {
+                nama_tamu: document.getElementById('nama').value,
+                email_tamu: document.getElementById('email').value.trim().toLowerCase(),
+                tanggal_checkin: fmt(tgl[0]),
+                tanggal_checkout: fmt(tgl[1]),
+                tipe_villa: "1-Bedroom Private Pool Villa",
+                status: "Pending Payment",
+                created_at: new Date().toISOString()
+            };
+            
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa`, {
+                    method: 'POST',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataBooking)
+                });
+                
+                if(res.ok || res.status === 201 || res.status === 204) {
+                    msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-green-100 text-green-700";
+                    msg.innerText = "Pemesanan Berhasil Dicatat! Silakan Login untuk melakukan pembayaran.";
+                    document.getElementById('bookingForm').reset();
+                    kalenderVilla.clear();
+                    ambilDataReservasi();
+                } else { 
+                    throw new Error("Gagal menyimpan data."); 
+                }
+            } catch (error) {
+                msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700";
+                msg.innerText = "Terjadi kesalahan sistem.";
+            }
+        });
+    </script>
+</body>
+</html>
