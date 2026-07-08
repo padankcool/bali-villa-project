@@ -3,371 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ubud Haven Luxury Villas | Direct Booking System</title>
+    <title>Admin Dashboard | Ubud Haven</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        body { display: none; }
+    </style>
 </head>
-<body class="bg-stone-50 text-stone-800 antialiased">
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
 
-    <nav class="bg-white/90 backdrop-blur-md border-b border-stone-100 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="/" class="text-xl font-serif tracking-widest font-bold text-stone-900">UBUD HAVEN</a>
-            <div class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wider text-stone-600">
-                <a href="/" class="hover:text-stone-900 transition">BERANDA</a>
-                <div class="relative group">
-                    <button class="hover:text-stone-900 transition flex items-center space-x-1 focus:outline-none">
-                        <span>VILLAS</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div class="absolute left-0 mt-2 w-48 bg-white border border-stone-100 rounded-lg shadow-lg py-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
-                        <a href="#" class="block px-4 py-2 text-xs hover:bg-stone-50 text-stone-700 hover:text-stone-900">1-Bedroom Pool Villa</a>
-                    </div>
-                </div>
-                <a href="galeri" class="hover:text-stone-900 transition">GALERI</a>
-                <button id="loginMenuBtn" onclick="bukaModalLogin()" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none">LOGIN</button>
-            </div>
-            <div class="hidden md:block">
-                <a href="#bookingForm" class="bg-stone-900 hover:bg-stone-800 text-white text-xs px-4 py-2 rounded font-medium tracking-wider transition">BOOK NOW</a>
-            </div>
+    <nav class="bg-stone-900 text-white px-6 py-4 flex items-center justify-between shadow-md">
+        <div class="flex items-center space-x-3">
+            <span class="text-xl font-serif tracking-widest font-bold">UBUD HAVEN</span>
+            <span class="bg-amber-600 text-[10px] uppercase font-bold px-2 py-0.5 rounded tracking-wider">ADMIN PORTAL</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span id="adminEmail" class="text-xs text-stone-400 font-mono">Memuat...</span>
+            <button onclick="logout()" class="text-xs bg-stone-800 hover:bg-stone-700 border border-stone-700 px-3 py-1.5 rounded transition font-medium">
+                KELUAR
+            </button>
         </div>
     </nav>
 
-    <header class="relative h-[40vh] bg-cover bg-center flex items-center justify-center" style="background-image: url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80');">
-        <div class="absolute inset-0 bg-black/40"></div>
-        <div class="relative text-center text-white px-4">
-            <h1 class="text-4xl md:text-5xl font-serif mb-2">Ubud Haven</h1>
-            <p class="text-xs md:text-sm font-light tracking-widest uppercase">Luxury Private Villas Development</p>
-        </div>
-    </header>
-
-    <main class="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-8">
-        <section class="md:col-span-2 space-y-6">
-            <h2 class="text-3xl font-serif">1-Bedroom Private Pool Villa</h2>
-            <p class="text-stone-600 leading-relaxed">
-                Nikmati ketenangan total di tengah sawah Ubud. Villa ini dilengkapi dengan kolam renang pribadi, dapur modern, semi-outdoor bathroom, dan pelayanan butler 24 jam.
-            </p>
-            <div class="grid grid-cols-2 gap-4">
-                <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=600&q=80" alt="Pool" class="rounded-lg shadow-sm">
-                <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" alt="Bedroom" class="rounded-lg shadow-sm">
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-serif text-stone-900 font-bold">Kelola Reservasi Villa</h1>
+                <p class="text-xs text-stone-500 mt-1 uppercase tracking-wider">Daftar permintaan booking masuk dari sistem kustomer.</p>
             </div>
-        </section>
+            <button onclick="ambilSemuaReservasi()" class="self-start bg-white border border-stone-300 hover:border-stone-900 text-stone-700 hover:text-stone-900 px-4 py-2 text-xs rounded-lg font-medium transition shadow-sm flex items-center gap-2">
+                🔄 Segarkan Data
+            </button>
+        </div>
 
-        <section class="bg-white p-6 rounded-xl shadow-md border border-stone-100 h-fit">
-            <h3 class="text-xl font-serif mb-4 pb-2 border-b">Direct Booking</h3>
-            <form id="bookingForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Nama Lengkap</label>
-                    <input type="text" id="nama" required class="w-full p-2 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email</label>
-                    <input type="email" id="email" required class="w-full p-2 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Pilih Tanggal Menginap</label>
-                    <input type="text" id="rangeTanggal" placeholder="Pilih Check-In & Check-Out" required class="w-full p-2 border rounded-md bg-stone-50 text-sm focus:outline-none focus:ring-1 focus:ring-stone-500">
-                </div>
-                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-md font-medium transition duration-200">Pesan Sekarang</button>
-            </form>
-            <div id="statusMessage" class="mt-4 p-3 rounded-md text-sm text-center hidden"></div>
-        </section>
+        <div class="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-stone-50 border-b border-stone-200 text-stone-500 text-xs uppercase tracking-wider font-semibold">
+                            <th class="p-4">ID / Tamu</th>
+                            <th class="p-4">Tipe Villa</th>
+                            <th class="p-4">Tanggal Menginap</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4 text-center">Aksi Konfirmasi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        <tr>
+                            <td colspan="5" class="p-8 text-center text-stone-400">Sedang mengambil data reservasi...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
-
-    <div id="loginModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" onclick="tutupModalLogin()">
-        <div class="bg-white max-w-sm w-full rounded-2xl p-6 shadow-2xl border border-stone-100 transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
-            
-            <div class="flex border-b border-stone-100 mb-6 text-sm font-medium">
-                <button id="tabLogin" onclick="switchAuthTab('login')" class="w-1/2 pb-3 text-center border-b-2 border-stone-950 text-stone-950 font-serif tracking-wider">LOGIN</button>
-                <button id="tabSignUp" onclick="switchAuthTab('signup')" class="w-1/2 pb-3 text-center border-b-2 border-transparent text-stone-400 hover:text-stone-600 font-serif tracking-wider">SIGN UP</button>
-            </div>
-
-            <form id="loginForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email</label>
-                    <input type="email" id="loginEmail" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Password</label>
-                    <input type="password" id="loginPassword" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
-                </div>
-                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Masuk Sistem</button>
-            </form>
-
-            <form id="signUpForm" class="space-y-4 hidden">
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Nama Lengkap</label>
-                    <input type="text" id="regNama" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email Tamu</label>
-                    <input type="email" id="regEmail" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Buat Password</label>
-                    <input type="password" id="regPassword" required placeholder="Minimal 6 karakter" class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
-                </div>
-                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Daftar Akun Baru</button>
-            </form>
-
-            <div id="loginError" class="mt-4 p-2 rounded-lg text-xs text-center bg-red-50 text-red-600 hidden"></div>
-            <div id="regSuccess" class="mt-4 p-2 rounded-lg text-xs text-center bg-green-50 text-green-700 hidden"></div>
-        </div>
-    </div>
 
     <script>
         const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTUwNTcsImV4cCI6MjA5ODM3MTA1N30.bC-GO4HHdBo4zxNfJZ4BDmIPfQKlzA6d_9g_-ThPBoc"; 
 
-        let kalenderVilla;
-        let tanggalTerpesan = [];
+        const token = localStorage.getItem('supabase_token');
+        const emailAktif = localStorage.getItem('user_logged_email');
 
         // ========================================================
-        // LOGIKA BARU: DETEKSI STATUS LOGIN SECARA AMAN (UX CHECK)
+        // 🚨 FITUR SATPAM MUTAKHIR: CEK OTORISASI SEBELUM RENDER PAGE
         // ========================================================
-        document.addEventListener("DOMContentLoaded", () => {
-            const tokenUserAktif = localStorage.getItem('supabase_token');
-            const emailUserAktif = localStorage.getItem('user_logged_email');
-            const btnNavLogin = document.getElementById('loginMenuBtn');
-
-            if (tokenUserAktif && emailUserAktif) {
-                if (btnNavLogin) {
-                    // Ubah teks tombol menjadi PORTAL SAYA agar terlihat profesional
-                    btnNavLogin.innerText = "PORTAL SAYA";
-                    btnNavLogin.className = "hover:text-stone-900 transition font-bold text-stone-900 uppercase tracking-wider focus:outline-none";
-                    
-                    // Alihkan fungsi klik agar langsung menuju ke dashboard yang sesuai
-                    btnNavLogin.onclick = () => {
-                        if (emailUserAktif === 'admin1@villabali.com') {
-                            window.location.href = 'https://project-sewa-villa.vercel.app/admin';
-                        } else {
-                            window.location.href = 'https://project-sewa-villa.vercel.app/customer';
-                        }
-                    };
-                }
-
-                // Masukkan email kustomer secara otomatis ke form booking utama (Autofill)
-                const formEmailInput = document.getElementById('email');
-                if (formEmailInput) {
-                    formEmailInput.value = emailUserAktif;
-                }
-            }
-        });
-
-        function buatRentangTanggal(start, end) {
-            let arr = [];
-            let dt = new Date(start);
-            let endDt = new Date(end);
-            while (dt <= endDt) {
-                arr.push(new Date(dt).toISOString().split('T')[0]);
-                dt.setDate(dt.getDate() + 1);
-            }
-            return arr;
-        }
-
-        async function ambilDataReservasi() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?select=tanggal_checkin,tanggal_checkout&status=not.eq.Cancelled`, {
-                    method: 'GET',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    tanggalTerpesan = [];
-                    if (data && data.length > 0) {
-                        data.forEach(res => {
-                            const rentang = buatRentangTanggal(res.tanggal_checkin, res.tanggal_checkout);
-                            tanggalTerpesan = [...tanggalTerpesan, ...rentang];
-                        });
-                    }
-                }
-
-                kalenderVilla = flatpickr("#rangeTanggal", {
-                    mode: "range", minDate: "today", dateFormat: "Y-m-d", disable: tanggalTerpesan
-                });
-            } catch (error) { console.error(error); }
-        }
-        
-        ambilDataReservasi();
-
-        function bukaModalLogin() {
-            const modal = document.getElementById('loginModal');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                modal.firstElementChild.classList.remove('scale-95');
-            }, 10);
-        }
-
-        function tutupModalLogin() {
-            const modal = document.getElementById('loginModal');
-            modal.classList.add('opacity-0');
-            modal.firstElementChild.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-            switchAuthTab('login');
-        }
-
-        function switchAuthTab(type) {
-            const tabLogin = document.getElementById('tabLogin');
-            const tabSignUp = document.getElementById('tabSignUp');
-            const loginForm = document.getElementById('loginForm');
-            const signUpForm = document.getElementById('signUpForm');
-            document.getElementById('loginError').classList.add('hidden');
-            document.getElementById('regSuccess').classList.add('hidden');
-
-            if(type === 'login') {
-                tabLogin.className = "w-1/2 pb-3 text-center border-b-2 border-stone-950 text-stone-950 font-serif tracking-wider";
-                tabSignUp.className = "w-1/2 pb-3 text-center border-b-2 border-transparent text-stone-400 hover:text-stone-600 font-serif tracking-wider";
-                loginForm.classList.remove('hidden');
-                signUpForm.classList.add('hidden');
-            } else {
-                tabSignUp.className = "w-1/2 pb-3 text-center border-b-2 border-stone-950 text-stone-950 font-serif tracking-wider";
-                tabLogin.className = "w-1/2 pb-3 text-center border-b-2 border-transparent text-stone-400 hover:text-stone-600 font-serif tracking-wider";
-                signUpForm.classList.remove('hidden');
-                loginForm.classList.add('hidden');
-            }
-        }
-
-        // FUNGSI DAFTAR AKUN CUSTOMER BARU
-        document.getElementById('signUpForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nama = document.getElementById('regNama').value;
-            const email = document.getElementById('regEmail').value.trim().toLowerCase();
-            const password = document.getElementById('regPassword').value;
-            const errDiv = document.getElementById('loginError');
-            const successDiv = document.getElementById('regSuccess');
-            
-            errDiv.classList.add('hidden');
-            successDiv.classList.add('hidden');
-
-            try {
-                const response = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
-                    method: 'POST',
-                    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        email: email, 
-                        password: password,
-                        options: { data: { full_name: nama } }
-                    })
-                });
-
-                const resData = await response.json();
-                if (!response.ok) throw new Error(resData.error_description || resData.message || "Gagal mendaftar.");
-
-                successDiv.innerText = "Pendaftaran Berhasil! Silakan beralih ke tab LOGIN.";
-                successDiv.classList.remove('hidden');
-                document.getElementById('signUpForm').reset();
-
-            } catch (error) {
-                errDiv.innerText = error.message;
-                errDiv.classList.remove('hidden');
-            }
-        });
-
-        // FUNGSI LOGIN (DENGAN JALUR TOL SUPER ADMIN)
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-            const password = document.getElementById('loginPassword').value;
-            const errDiv = document.getElementById('loginError');
-            errDiv.classList.add('hidden');
-
-            try {
-                // 1. Validasi Akun ke Supabase Auth
-                const responseAuth = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-                    method: 'POST',
-                    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                const resAuthData = await responseAuth.json();
-                if (!responseAuth.ok) throw new Error(resAuthData.error_description || "Email atau password salah.");
-
-                const tokenUser = resAuthData.access_token;
-                localStorage.setItem('supabase_token', tokenUser);
-                localStorage.setItem('user_logged_email', email);
-
-                // ==========================================
-                // 2. JALUR TOL KHUSUS SUPER ADMIN
-                // ==========================================
-                if (email === 'admin1@villabali.com') {
-                    window.location.href = 'https://project-sewa-villa.vercel.app/admin';
-                    return; 
-                }
-
-                // ==========================================
-                // 3. CEK DINAMIS UNTUK STAF LAIN 
-                // ==========================================
-                const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}`, {
-                    method: 'GET',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${tokenUser}` } 
-                });
-
-                if (responseRole.ok) {
-                    const resRoleData = await responseRole.json();
-                    if (resRoleData && resRoleData.length > 0) {
-                        window.location.href = 'https://project-sewa-villa.vercel.app/admin';
-                        return; 
-                    }
-                }
-
-                // 4. Jika bukan super admin & tidak ada di tabel role -> Customer
-                window.location.href = 'https://project-sewa-villa.vercel.app/customer';
-
-            } catch (error) {
-                errDiv.innerText = error.message;
-                errDiv.classList.remove('hidden');
-            }
-        });
-
-        // FORM BOOKING DI HALAMAN UTAMA
-        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const msg = document.getElementById('statusMessage');
-            
-            if (!kalenderVilla || kalenderVilla.selectedDates.length < 2) {
-                msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700";
-                msg.innerText = "Pilih rentang tanggal check-in & check-out.";
-                msg.classList.remove('hidden');
+        async function jalankanSatpamAdmin() {
+            if (!token || !emailAktif) {
+                localStorage.clear();
+                window.location.href = '/';
                 return;
             }
 
-            const tgl = kalenderVilla.selectedDates;
-            const fmt = (d) => d.toISOString().split('T')[0];
-            
-            const dataBooking = {
-                nama_tamu: document.getElementById('nama').value,
-                email_tamu: document.getElementById('email').value.trim().toLowerCase(),
-                tanggal_checkin: fmt(tgl[0]),
-                tanggal_checkout: fmt(tgl[1]),
-                tipe_villa: "1-Bedroom Private Pool Villa",
-                status: "Pending Payment",
-                created_at: new Date().toISOString()
-            };
-            
+            // Jalur Tol Khusus Super Admin Bli (Langsung Lolos)
+            if (emailAktif === 'admin1@villabali.com') {
+                bukaAksesHalaman();
+                return;
+            }
+
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa`, {
-                    method: 'POST',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataBooking)
+                // Cek apakah email terdaftar di tabel user_roles
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(emailAktif)}`, {
+                    method: 'GET',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${token}` }
                 });
-                
-                if(res.ok || res.status === 201 || res.status === 204) {
-                    msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-green-100 text-green-700";
-                    msg.innerText = "Pemesanan Berhasil Dicatat! Silakan Login untuk melakukan pembayaran.";
-                    document.getElementById('bookingForm').reset();
-                    kalenderVilla.clear();
-                    ambilDataReservasi();
-                } else { 
-                    throw new Error("Gagal menyimpan data."); 
+
+                const data = await response.json();
+
+                if (response.ok && data && data.length > 0) {
+                    // Terbukti staf/admin -> Lolos gembok!
+                    bukaAksesHalaman();
+                } else {
+                    // Customer nakal ganti URL -> Tendang keras!
+                    tendangCustomerNakal();
                 }
             } catch (error) {
-                msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700";
-                msg.innerText = "Terjadi kesalahan sistem.";
+                tendangCustomerNakal();
             }
-        });
-    </script>
-</body>
-</html>
+        }
+
+        function bukaAksesHalaman() {
+            document.body.style.display = 'block'; // Tampilkan layout HTML
+            document.getElementById('adminEmail').innerText = emailAktif;
+            ambilSemuaReservasi(); // Load data tabel
+        }
+
+        function tendangCustomerNakal() {
+            alert("🛑 AKSES DITOLAK!\nHalaman ini dilindungi ketat dan hanya bisa diakses oleh Admin/Staf.");
+            window.location.href = 'https://project-sewa-villa.vercel.app/customer';
+        }
+
+        // Jalankan Satpam Detik Ini Juga
+        jalankanSatpamAdmin();
+
+
+        // ========================================================
+        // 📊 MANAJEMEN DATA TABEL RESERVASI
+        // ========================================================
+        async function ambilSemuaReservasi() {
+            const tbody = document.getElementById('adminTableBody');
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?order=id.desc`, {
+                    method: 'GET',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-stone-400">Belum ada data booking masuk dari kustomer.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                data.forEach(booking => {
+                    let badgeStatus = "";
+                    let tombolAksi = "";
+
+                    if (booking.status === 'Pending Payment') {
+                        badgeStatus = `<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-medium">⏳ Menunggu Bayar</span>`;
+                        tombolAksi = `<span class="text-xs text-stone-400 italic">Menunggu customer klik bayar (10 mnt)</span>`;
+                    } else if (booking.status === 'Paid (Awaiting Approval)') {
+                        badgeStatus = `<span class="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full text-xs font-bold animate-pulse">🔄 Perlu ACC</span>`;
+                        tombolAksi = `
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="prosesKeputusanBooking(${booking.id}, 'Confirmed')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded font-medium transition shadow-sm">✅ ACC</button>
+                                <button onclick="prosesKeputusanBooking(${booking.id}, 'Cancelled')" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs px-3 py-1.5 rounded font-medium transition">❌ Tolak</button>
+                            </div>
+                        `;
+                    } else if (booking.status === 'Confirmed') {
+                        badgeStatus = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full text-xs font-bold">✅ Selesai / Di-ACC</span>`;
+                        tombolAksi = `<span class="text-xs text-emerald-600 font-medium">Lunas & E-Ticket Aktif</span>`;
+                    } else if (booking.status === 'Cancelled') {
+                        badgeStatus = `<span class="bg-stone-100 text-stone-400 border border-stone-200 px-2.5 py-1 rounded-full text-xs font-medium">❌ Dibatalkan</span>`;
+                        tombolAksi = `<span class="text-xs text-stone-400">Gagal / Kadaluwarsa</span>`;
+                    }
+
+                    tbody.innerHTML += `
+                        <tr class="border-b border-stone-100 hover:bg-stone-50/50 transition">
+                            <td class="p-4">
+                                <span class="font-mono font-bold text-stone-900 block">#UBD-${booking.id}</span>
+                                <span class="text-xs text-stone-800 font-medium">${booking.nama_tamu}</span>
+                                <span class="text-[10px] text-stone-400 block font-mono">${booking.email_tamu}</span>
+                            </td>
+                            <td class="p-4 font-medium text-stone-700">${booking.tipe_villa}</td>
+                            <td class="p-4 font-mono text-xs">
+                                <span class="text-emerald-700 font-bold">${booking.tanggal_checkin}</span>
+                                <span class="text-stone-400 mx-1">s/d</span>
+                                <span class="text-red-700 font-bold">${booking.tanggal_checkout}</span>
+                            </td>
+                            <td class="p-4">${badgeStatus}</td>
+                            <td class="p-4 text-center">${tombolAksi}</td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-600">Gagal memuat data dari database Supabase.</td></tr>`;
+            }
+        }
+
+        // PROSES UP-DATE KEPUTUSAN STATUS RESERVASI
+        async function prosesKeputusanBooking(id, statusBaru) {
+            const pesanConf = statusBaru === 'Confirmed' ? "ACC dan terbitkan E-ticket untuk pesanan ini?" : "Tolak dan batalkan pesanan ini?";
+            if (!confirm(pesanConf)) return;
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa?id=eq.${id}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: statusBaru })
+                });
