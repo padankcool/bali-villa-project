@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,10 +16,10 @@
             <a href="/" class="text-xl font-serif tracking-widest font-bold text-stone-900">UBUD HAVEN</a>
             
             <div class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wider text-stone-600">
-                <a href="/" class="hover:text-stone-900 transition">BERANDA</a>
+                <a href="/" data-i18n="home" class="hover:text-stone-900 transition">HOME</a>
                 <div class="relative group">
                     <button class="hover:text-stone-900 transition flex items-center space-x-1 focus:outline-none">
-                        <span>VILLAS</span>
+                        <span data-i18n="villas">VILLAS</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div class="absolute left-0 mt-2 w-48 bg-white border border-stone-100 rounded-lg shadow-lg py-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
@@ -27,44 +27,69 @@
                         <a href="#bookingFormSection" class="block px-4 py-2 text-xs hover:bg-stone-50 text-stone-700 hover:text-stone-900">Presidential Suite</a>
                     </div>
                 </div>
-                <a href="galeri" class="hover:text-stone-900 transition">GALERI</a>
+                <a href="galeri" data-i18n="gallery" class="hover:text-stone-900 transition">GALLERY</a>
             </div>
             
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="#bookingFormSection" class="bg-stone-900 hover:bg-stone-800 text-white text-xs px-4 py-2 rounded font-medium tracking-wider transition">BOOK NOW</a>
+            <div class="hidden md:flex items-center space-x-4">
+                
+                <div class="relative group z-50">
+                    <button class="flex items-center space-x-1 bg-stone-50 hover:bg-stone-100 border border-stone-200 text-stone-700 text-xs px-2.5 py-1.5 rounded-md font-medium transition focus:outline-none shadow-sm">
+                        <span id="labelBahasaAktif">🌐 EN</span>
+                        <svg class="w-3 h-3 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="absolute right-0 mt-1 w-36 bg-white border border-stone-100 rounded-lg shadow-xl py-1 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-1">
+                        <button onclick="gantiSistemBahasa('en')" class="w-full text-left block px-4 py-2 text-xs text-stone-700 hover:bg-stone-50 font-medium">English</button>
+                        <button onclick="gantiSistemBahasa('id')" class="w-full text-left block px-4 py-2 text-xs text-stone-700 hover:bg-stone-50 font-medium">Indonesia</button>
+                        <button onclick="gantiSistemBahasa('ja')" class="w-full text-left block px-4 py-2 text-xs text-stone-700 hover:bg-stone-50 font-medium">日本語 (Japanese)</button>
+                        <button onclick="gantiSistemBahasa('es')" class="w-full text-left block px-4 py-2 text-xs text-stone-700 hover:bg-stone-50 font-medium">Español</button>
+                        <button onclick="gantiSistemBahasa('zh')" class="w-full text-left block px-4 py-2 text-xs text-stone-700 hover:bg-stone-50 font-medium">简体中文</button>
+                        <button onclick="gantiSistemBahasa('ko')" class="w-full text-left block px-4 py-2 text-xs text-stone-700 hover:bg-stone-50 font-medium">한국어 (Korean)</button>
+                        <button onclick="gantiSistemBahasa('ar')" class="w-full text-left block px-4 py-2 text-xs text-stone-700 hover:bg-stone-50 font-medium">العربية (Arabic)</button>
+                    </div>
+                </div>
+
+                <a href="#bookingFormSection" data-i18n="book_now" class="bg-stone-900 hover:bg-stone-800 text-white text-xs px-4 py-2 rounded font-medium tracking-wider transition">BOOK NOW</a>
+                
                 <div id="authNavArea">
-                    <button onclick="bukaModalLogin()" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none text-sm">LOGIN</button>
+                    <button onclick="bukaModalLogin()" data-i18n="login" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none text-sm">LOGIN</button>
                 </div>
             </div>
 
-            <div class="flex items-center md:hidden">
+            <div class="flex items-center md:hidden gap-3">
+                <select onchange="gantiSistemBahasa(this.value)" id="selectBahasaMobile" class="bg-stone-50 border border-stone-200 text-stone-700 text-xs px-2 py-1 rounded focus:outline-none shadow-sm font-medium">
+                    <option value="en">🌐 EN</option>
+                    <option value="id">🌐 ID</option>
+                    <option value="ja">🌐 JA</option>
+                    <option value="es">🌐 ES</option>
+                    <option value="zh">🌐 ZH</option>
+                    <option value="ko">🌐 KO</option>
+                    <option value="ar">🌐 AR</option>
+                </select>
+                
                 <button onclick="toggleMobileMenu()" class="text-stone-700 hover:text-stone-900 focus:outline-none p-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
             </div>
         </div>
 
         <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-stone-100 px-4 py-4 space-y-3 shadow-inner">
-            <a href="/" onclick="toggleMobileMenu()" class="block text-sm font-medium tracking-wider text-stone-600 hover:text-stone-900 py-1">BERANDA</a>
+            <a href="/" onclick="toggleMobileMenu()" data-i18n="home" class="block text-sm font-medium tracking-wider text-stone-600 hover:text-stone-900 py-1">HOME</a>
             <div class="border-t border-stone-100 my-1"></div>
-            <span class="block text-[10px] uppercase tracking-wider text-stone-400 font-bold">Koleksi Villa</span>
+            <span class="block text-[10px] uppercase tracking-wider text-stone-400 font-bold" data-i18n="villas">VILLAS</span>
             <a href="#bookingFormSection" onclick="toggleMobileMenu()" class="block text-xs font-medium text-stone-600 hover:text-stone-900 pl-2 py-0.5">1-Bedroom Pool Villa</a>
             <a href="#bookingFormSection" onclick="toggleMobileMenu()" class="block text-xs font-medium text-stone-600 hover:text-stone-900 pl-2 py-0.5">Presidential Suite</a>
             <div class="border-t border-stone-100 my-1"></div>
-            <a href="galeri" onclick="toggleMobileMenu()" class="block text-sm font-medium tracking-wider text-stone-600 hover:text-stone-900 py-1">GALERI</a>
+            <a href="galeri" onclick="toggleMobileMenu()" data-i18n="gallery" class="block text-sm font-medium tracking-wider text-stone-600 hover:text-stone-900 py-1">GALLERY</a>
             <div class="border-t border-stone-100 my-2"></div>
-            <a href="#bookingFormSection" onclick="toggleMobileMenu()" class="block text-center bg-stone-900 text-white text-xs py-2.5 rounded font-medium tracking-wider shadow-sm">BOOK NOW</a>
+            <a href="#bookingFormSection" onclick="toggleMobileMenu()" data-i18n="book_now" class="block text-center bg-stone-900 text-white text-xs py-2.5 rounded font-medium tracking-wider shadow-sm">BOOK NOW</a>
             
             <div id="authNavAreaMobile" class="pt-2">
-                <button onclick="bukaModalLogin(); toggleMobileMenu();" class="w-full text-center hover:bg-stone-50 text-stone-700 transition font-semibold uppercase tracking-wider focus:outline-none text-xs border border-stone-300 py-2.5 rounded-lg">LOGIN / SIGN UP</button>
+                <button onclick="bukaModalLogin(); toggleMobileMenu();" data-i18n="login" class="w-full text-center hover:bg-stone-50 text-stone-700 transition font-semibold uppercase tracking-wider focus:outline-none text-xs border border-stone-300 py-2.5 rounded-lg">LOGIN / SIGN UP</button>
             </div>
         </div>
     </nav>
 
     <header id="parallaxSliderContainer" class="relative h-[45vh] md:h-[55vh] overflow-hidden flex items-center justify-center select-none z-10">
-        
         <div id="slideItem0" class="absolute inset-0 bg-cover bg-center bg-fixed transition-opacity duration-1000 opacity-100" style="background-image: url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80');"></div>
         <div id="slideItem1" class="absolute inset-0 bg-cover bg-center bg-fixed transition-opacity duration-1000 opacity-0" style="background-image: url('https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=1200&q=80');"></div>
         <div id="slideItem2" class="absolute inset-0 bg-cover bg-center bg-fixed transition-opacity duration-1000 opacity-0" style="background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80');"></div>
@@ -74,18 +99,14 @@
         
         <div class="relative text-center text-white px-4 z-20">
             <h1 class="text-4xl md:text-6xl font-serif mb-2 tracking-wide drop-shadow-md">Ubud Haven</h1>
-            <p class="text-xs md:text-sm font-light tracking-widest uppercase bg-black/20 inline-block px-3 py-1 rounded backdrop-blur-sm">Luxury Private Villas Development</p>
+            <p data-i18n="slider_desc" class="text-xs md:text-sm font-light tracking-widest uppercase bg-black/20 inline-block px-3 py-1 rounded backdrop-blur-sm">Luxury Private Villas Development</p>
         </div>
 
         <button onclick="klikPanahManual(-1)" class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/60 text-white p-2.5 md:p-3 rounded-full transition duration-200 z-30 focus:outline-none backdrop-blur-sm border border-white/10 group">
-            <svg class="w-5 h-5 md:w-6 md:h-6 transform group-hover:-translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
+            <svg class="w-5 h-5 md:w-6 md:h-6 transform group-hover:-translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
         <button onclick="klikPanahManual(1)" class="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/60 text-white p-2.5 md:p-3 rounded-full transition duration-200 z-30 focus:outline-none backdrop-blur-sm border border-white/10 group">
-            <svg class="w-5 h-5 md:w-6 md:h-6 transform group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
+            <svg class="w-5 h-5 md:w-6 md:h-6 transform group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         </button>
 
         <div class="absolute bottom-4 flex space-x-2 z-30">
@@ -98,9 +119,9 @@
 
     <main class="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-8">
         <section class="md:col-span-2 space-y-6">
-            <h2 class="text-3xl font-serif">Koleksi Akomodasi Mewah</h2>
-            <p class="text-stone-600 leading-relaxed text-sm md:text-base">
-                Nikmati ketenangan total di tengah alam Ubud. Pilih antara 1-Bedroom Private Pool Villa yang intim, atau Presidential 2-Bedroom Suite yang megah untuk keluarga Anda. Semua dilengkapi dengan pelayanan butler 24 jam.
+            <h2 data-i18n="section_title" class="text-3xl font-serif">Luxury Accommodation Collection</h2>
+            <p data-i18n="section_desc" class="text-stone-600 leading-relaxed text-sm md:text-base">
+                Enjoy total tranquility in the heart of Ubud's nature. Choose between the intimate 1-Bedroom Private Pool Villa, or the majestic Presidential 2-Bedroom Suite for your family. All come with 24-hour butler service.
             </p>
             <div class="grid grid-cols-2 gap-4">
                 <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=600&q=80" alt="Pool" class="rounded-lg shadow-sm h-36 md:h-48 object-cover w-full">
@@ -109,28 +130,28 @@
         </section>
 
         <section class="bg-white p-6 rounded-xl shadow-md border border-stone-100 h-fit" id="bookingFormSection">
-            <h3 class="text-xl font-serif mb-4 pb-2 border-b">Direct Booking</h3>
+            <h3 data-i18n="form_title" class="text-xl font-serif mb-4 pb-2 border-b">Direct Booking</h3>
             <form id="bookingForm" class="space-y-4">
                 <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Nama Lengkap</label>
+                    <label data-i18n="label_name" class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Full Name</label>
                     <input type="text" id="nama" required class="w-full p-2.5 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email</label>
+                    <label data-i18n="label_email" class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email Address</label>
                     <input type="email" id="email" required class="w-full p-2.5 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Pilih Tipe Villa</label>
+                    <label data-i18n="label_villa" class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Select Villa Type</label>
                     <select id="pilihanVilla" required class="w-full p-2.5 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm font-semibold text-stone-700" onchange="ambilDataReservasi()">
                         <option value="1-Bedroom Private Pool Villa">1-Bedroom Private Pool Villa</option>
                         <option value="Presidential 2-Bedroom Suite">Presidential 2-Bedroom Suite</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Tanggal Menginap</label>
-                    <input type="text" id="rangeTanggal" placeholder="Pilih Check-In & Check-Out" required class="w-full p-2.5 border rounded-md bg-stone-50 text-sm focus:outline-none focus:ring-1 focus:ring-stone-500">
+                    <label data-i18n="label_date" class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Stay Dates</label>
+                    <input type="text" id="rangeTanggal" placeholder="Select Check-In & Check-Out" required class="w-full p-2.5 border rounded-md bg-stone-50 text-sm focus:outline-none focus:ring-1 focus:ring-stone-500">
                 </div>
-                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-md font-medium transition duration-200 text-sm">Pesan Sekarang</button>
+                <button type="submit" data-i18n="btn_submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-md font-medium transition duration-200 text-sm">Book Now</button>
             </form>
             <div id="statusMessage" class="mt-4 p-3 rounded-md text-sm text-center hidden"></div>
         </section>
@@ -152,7 +173,7 @@
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Password</label>
                     <input type="password" id="loginPassword" required class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
                 </div>
-                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Masuk Sistem</button>
+                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-lg font-medium text-sm transition duration-200">LOGIN</button>
             </form>
 
             <form id="signUpForm" class="space-y-4 hidden">
@@ -168,7 +189,7 @@
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Buat Password</label>
                     <input type="password" id="regPassword" required placeholder="Minimal 6 karakter" class="w-full p-2.5 border rounded-lg bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
                 </div>
-                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white p-3 rounded-lg font-medium text-sm transition duration-200">Daftar Akun Baru</button>
+                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white p-3 rounded-lg font-medium text-sm transition duration-200">SIGN UP</button>
             </form>
 
             <div id="loginError" class="mt-4 p-2 rounded-lg text-xs text-center bg-red-50 text-red-600 hidden"></div>
@@ -181,19 +202,127 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTUwNTcsImV4cCI6MjA5ODM3MTA1N30.bC-GO4HHdBo4zxNfJZ4BDmIPfQKlzA6d_9g_-ThPBoc"; 
 
         // ========================================================
+        // 🌐 ARSITEKTUR MULTI-BAHASA (7 BAHASA - DEFAULT: ENGLISH)
+        // ========================================================
+        const kamusBahasa = {
+            en: {
+                home: "HOME", villas: "VILLAS", gallery: "GALLERY", login: "LOGIN", book_now: "BOOK NOW",
+                slider_desc: "Luxury Private Villas Development",
+                section_title: "Luxury Accommodation Collection",
+                section_desc: "Enjoy total tranquility in the heart of Ubud's nature. Choose between the intimate 1-Bedroom Private Pool Villa, or the majestic Presidential 2-Bedroom Suite for your family. All come with 24-hour butler service.",
+                form_title: "Direct Booking", label_name: "Full Name", label_email: "Email Address",
+                label_villa: "Select Villa Type", label_date: "Stay Dates", placeholder_date: "Select Check-In & Check-Out",
+                btn_submit: "Book Now", my_reservation: "📋 My Reservations", logout: "🚪 Logout"
+            },
+            id: {
+                home: "BERANDA", villas: "VILLAS", gallery: "GALERI", login: "MASUK", book_now: "PESAN SEKARANG",
+                slider_desc: "Pengembangan Villa Privat Mewah",
+                section_title: "Koleksi Akomodasi Mewah",
+                section_desc: "Nikmati ketenangan total di tengah alam Ubud. Pilih antara 1-Bedroom Private Pool Villa yang intim, atau Presidential 2-Bedroom Suite yang megah untuk keluarga Anda. Semua dilengkapi dengan pelayanan butler 24 jam.",
+                form_title: "Pemesanan Langsung", label_name: "Nama Lengkap", label_email: "Alamat Email",
+                label_villa: "Pilih Tipe Villa", label_date: "Tanggal Menginap", placeholder_date: "Pilih Check-In & Check-Out",
+                btn_submit: "Pesan Sekarang", my_reservation: "📋 Reservasi Saya", logout: "🚪 Keluar"
+            },
+            ja: {
+                home: "ホーム", villas: "ヴィラ", gallery: "ギャラリー", login: "ログイン", book_now: "今すぐ予約",
+                slider_desc: "高級プライベートヴィラ開発",
+                section_title: "贅沢な宿泊コレクション",
+                section_desc: "ウブドの大自然の中心で、完全な静寂をお楽しみください。親密な1ベッドルーム・プライベートプール・ヴィラ、またはご家族向けの壮大な大統領用2ベッドルーム・スイートからお選びいただけます。すべてに24時間対応のバトラーサービスが付きます。",
+                form_title: "直接予約", label_name: "フルネーム", label_email: "メールアドレス",
+                label_villa: "ヴィラタイプを選択", label_date: "宿泊日程", placeholder_date: "チェックイン＆チェックアウトを選択",
+                btn_submit: "今すぐ予約", my_reservation: "📋 マイ予約", logout: "🚪 ログアウト"
+            },
+            es: {
+                home: "INICIO", villas: "VILLAS", gallery: "GALERÍA", login: "ACCESO", book_now: "RESERVAR",
+                slider_desc: "Desarrollo de Villas Privadas de Lujo",
+                section_title: "Colección de Alojamientos de Lujo",
+                section_desc: "Disfrute de la tranquilidad total en el corazón de la naturaleza de Ubud. Elija entre la íntima Villa de 1 Dormitorio con Piscina Privada o la majestuosa Suite Presidencial de 2 Dormitorios para su familia. Todas incluyen servicio de mayordomo las 24 horas.",
+                form_title: "Reserva Directa", label_name: "Nombre Completo", label_email: "Correo Electrónico",
+                label_villa: "Seleccionar Tipo de Villa", label_date: "Fechas de Estancia", placeholder_date: "Seleccione Check-In y Check-Out",
+                btn_submit: "Reservar Ahora", my_reservation: "📋 Mis Reservas", logout: "🚪 Cerrar Sesión"
+            },
+            zh: {
+                home: "首页", villas: "别墅", gallery: "画廊", login: "登录", book_now: "立即预订",
+                slider_desc: "奢华私享别墅开发",
+                section_title: "奢华住宿系列",
+                section_desc: "在乌布大自然的心脏地带享受绝对的宁静。您可以选择温馨的一居室私人泳池别墅，或是适合家庭入住的宏伟总统两居室套房。所有客房均提供24小时管家服务。",
+                form_title: "直接预订", label_name: "全名", label_email: "电子邮件地址",
+                label_villa: "选择别墅类型", label_date: "入住日期", placeholder_date: "选择入住与退房日期",
+                btn_submit: "立即预订", my_reservation: "📋 我的预订", logout: "🚪 登出"
+            },
+            ko: {
+                home: "홈", villas: "빌라", gallery: "갤러리", login: "로그인", book_now: "지금 예약",
+                slider_desc: "럭셔리 프라이빗 빌라 개발",
+                section_title: "럭셔리 숙박 컬렉션",
+                section_desc: "우붓 자연의 중심에서 온전한 평온함을 누려보세요. 아늑한 1침실 프라이빗 풀 빌라 또는 가족을 위한 웅장한 프레지덴셜 2침실 스위트 중에서 선택하실 수 있습니다. 모든 객실에는 24시간 버틀러 서비스가 제공됩니다.",
+                form_title: "직접 예약", label_name: "성함", label_email: "이메일 주소",
+                label_villa: "빌라 유형 선택", label_date: "투숙 기간", placeholder_date: "체크인 및 체크아웃 선택",
+                btn_submit: "지금 예약", my_reservation: "📋 내 예약", logout: "🚪 로그아웃"
+            },
+            ar: {
+                home: "الرئيسية", villas: "الفيلات", gallery: "المعرض", login: "دخول", book_now: "احجز الآن",
+                slider_desc: "تطوير فيلات خاصة فاخرة",
+                section_title: "مجموعة الإقامة الفاخرة",
+                section_desc: "استمتع بالهدوء التام في قلب طبيعة أوبود. اختر بين فيلا غرفة نوم واحدة مع مسبح خاص، أو جناح بريزيدنشال غرفتي نوم الفخم لعائلتك. جميعها تأتي مع خدمة الخادم الشخصي على مدار 24 ساعة.",
+                form_title: "الحجز المباشر", label_name: "الاسم الكامل", label_email: "البريد الإلكتروني",
+                label_villa: "اختر نوع الفيلا", label_date: "تواريخ الإقامة", placeholder_date: "اختر تسجيل الوصول والمغادرة",
+                btn_submit: "احجز الآن", my_reservation: "📋 الحجوزات الخاصة بي", logout: "🚪 تسجيل الخروج"
+            }
+        };
+
+        let bahasaDipilih = localStorage.getItem('situs_bahasa') || 'en';
+
+        function gantiSistemBahasa(lang) {
+            bahasaDipilih = lang;
+            localStorage.setItem('situs_bahasa', lang);
+            
+            // Perbarui indikator label bahasa di desktop navbar
+            document.getElementById('labelBahasaAktif').innerText = "🌐 " + lang.toUpperCase();
+            document.getElementById('selectBahasaMobile').value = lang;
+
+            // Logika Mutakhir: Deteksi Arah RTL Khusus Arab
+            if (lang === 'ar') {
+                document.documentElement.setAttribute('dir', 'rtl');
+                document.documentElement.lang = 'ar';
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+                document.documentElement.lang = lang;
+            }
+
+            // Eksekusi Penggantian Seluruh Teks di Halaman
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const kunci = el.getAttribute('data-i18n');
+                if (kamusBahasa[lang][kunci]) {
+                    el.innerText = kamusBahasa[lang][kunci];
+                }
+            });
+
+            // Perbarui placeholder kalender secara dinamis
+            const inputKalender = document.getElementById('rangeTanggal');
+            if (inputKalender) {
+                inputKalender.placeholder = kamusBahasa[lang]['placeholder_date'];
+            }
+
+            // Render ulang menu profil agar sinkron bahasanya
+            cekSesiLoginDanRenderMenu();
+        }
+
+        // Panggil sistem terjemahan pertama kali saat halaman dimuat
+        document.addEventListener("DOMContentLoaded", () => {
+            gantiSistemBahasa(bahasaDipilih);
+        });
+
+
+        // ========================================================
         // 📱 LOGIKA NAVIGASI MOBILE (HAMBURGER TOGGLE)
         // ========================================================
         function toggleMobileMenu() {
             const menu = document.getElementById('mobileMenu');
-            if (menu.classList.contains('hidden')) {
-                menu.classList.remove('hidden');
-            } else {
-                menu.classList.add('hidden');
-            }
+            menu.classList.toggle('hidden');
         }
 
         // ========================================================
-        // 🚀 LOGIKA BARU: PARALLAX FADE SLIDER & TOUCH INTERACTIVE
+        // 🚀 LOGIKA AUTO-PLAY PARALLAX SLIDER & TOUCH INTERACTIVE
         // ========================================================
         const totalSlides = 4;
         let indexSlideAktif = 0;
@@ -201,24 +330,17 @@
 
         function geserSlideSlider(arah) {
             indexSlideAktif += arah;
-            if (indexSlideAktif < 0) {
-                indexSlideAktif = totalSlides - 1;
-            } else if (indexSlideAktif >= totalSlides) {
-                indexSlideAktif = 0;
-            }
+            if (indexSlideAktif < 0) indexSlideAktif = totalSlides - 1;
+            if (indexSlideAktif >= totalSlides) indexSlideAktif = 0;
             
-            // Perbarui visibilitas opacity tumpukan foto (Fade Effect)
             for (let i = 0; i < totalSlides; i++) {
                 const slide = document.getElementById(`slideItem${i}`);
                 const dot = document.getElementById(`dotSlider${i}`);
-                
                 if (i === indexSlideAktif) {
-                    slide.classList.remove('opacity-0');
-                    slide.classList.add('opacity-100');
+                    slide.classList.replace('opacity-0', 'opacity-100');
                     if (dot) dot.className = "w-2 h-2 rounded-full bg-white transition-all duration-300";
                 } else {
-                    slide.classList.remove('opacity-100');
-                    slide.classList.add('opacity-0');
+                    slide.classList.replace('opacity-100', 'opacity-0');
                     if (dot) dot.className = "w-2 h-2 rounded-full bg-white/40 transition-all duration-300";
                 }
             }
@@ -234,60 +356,50 @@
             mulaiAutoSlide();
         }
 
-        // INTEGRASI SENSOR GESERAN LAYAR (TOUCH SWIPE)
         let touchStartX = 0;
         let touchEndX = 0;
 
         document.addEventListener("DOMContentLoaded", () => {
             mulaiAutoSlide();
-            
             const wadahSlider = document.getElementById('parallaxSliderContainer');
             if (wadahSlider) {
-                wadahSlider.addEventListener('touchstart', e => {
-                    touchStartX = e.changedTouches[0].screenX;
-                }, { passive: true });
-
-                wadahSlider.addEventListener('touchend', e => {
-                    touchEndX = e.changedTouches[0].screenX;
-                    handleSwipeGesture();
-                }, { passive: true });
+                wadahSlider.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+                wadahSlider.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipeGesture(); }, { passive: true });
             }
         });
 
         function handleSwipeGesture() {
-            const ambangBatasGeser = 50; // Jarak minimal pixel geser untuk diproses
-            if (touchEndX < touchStartX - ambangBatasGeser) {
-                klikPanahManual(1); // Swipe ke kiri -> Next foto
-            }
-            if (touchEndX > touchStartX + ambangBatasGeser) {
-                klikPanahManual(-1); // Swipe ke kanan -> Prev foto
-            }
+            const ambangBatasGeser = 50;
+            if (touchEndX < touchStartX - ambangBatasGeser) klikPanahManual(1);
+            if (touchEndX > touchStartX + ambangBatasGeser) klikPanahManual(-1);
         }
-
 
         // ========================================================
         // 🔐 DETEKSI STATUS LOGIN PADA DESKTOP DAN MOBILE NAV
         // ========================================================
-        document.addEventListener("DOMContentLoaded", () => {
+        function cekSesiLoginDanRenderMenu() {
             const tokenUserAktif = localStorage.getItem('supabase_token');
             const emailUserAktif = localStorage.getItem('user_logged_email');
             const authNavArea = document.getElementById('authNavArea');
             const authNavAreaMobile = document.getElementById('authNavAreaMobile');
 
             if (tokenUserAktif && emailUserAktif) {
+                const txtReservasi = kamusBahasa[bahasaDipilih]['my_reservation'] || "📋 Reservasi Saya";
+                const txtKeluar = kamusBahasa[bahasaDipilih]['logout'] || "🚪 Keluar";
+
                 const dropdownHTML = `
                     <div class="relative group">
                         <button class="flex items-center space-x-1 bg-stone-100 hover:bg-stone-200 text-stone-900 font-mono text-xs px-3 py-2 rounded-lg font-bold tracking-wider transition focus:outline-none shadow-sm w-full justify-between md:justify-start">
-                            <span class="truncate max-w-[150px]">${emailUserAktif}</span>
+                            <span class="truncate max-w-[120px]">${emailUserAktif}</span>
                             <svg class="w-3 h-3 text-stone-500 ml-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="absolute right-0 mt-2 w-48 bg-white border border-stone-100 rounded-lg shadow-lg py-1 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 z-50">
                             <button onclick="kePortalSesuaiRole()" class="w-full text-left block px-4 py-2.5 text-xs text-stone-700 hover:bg-stone-50 hover:text-stone-900 font-semibold transition">
-                                📋 Reservasi Saya
+                                ${txtReservasi}
                             </button>
                             <div class="border-t border-stone-100"></div>
                             <button onclick="logoutIndex()" class="w-full text-left block px-4 py-2.5 text-xs text-red-600 hover:bg-red-50 font-semibold transition">
-                                🚪 Keluar
+                                ${txtKeluar}
                             </button>
                         </div>
                     </div>
@@ -297,11 +409,11 @@
                 if (authNavAreaMobile) authNavAreaMobile.innerHTML = dropdownHTML;
 
                 const formEmailInput = document.getElementById('email');
-                if (formEmailInput) {
-                    formEmailInput.value = emailUserAktif;
-                }
+                if (formEmailInput) formEmailInput.value = emailUserAktif;
             }
-        });
+        }
+
+        document.addEventListener("DOMContentLoaded", cekSesiLoginDanRenderMenu);
 
         function kePortalSesuaiRole() {
             const emailUserAktif = localStorage.getItem('user_logged_email');
@@ -400,7 +512,7 @@
             }
         }
 
-        // AKSI DAFTAR BARU
+        // AKSI SIGN UP & LOGIN SUBMIT (SUPABASE AUTH)
         document.getElementById('signUpForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const nama = document.getElementById('regNama').value;
@@ -408,9 +520,7 @@
             const password = document.getElementById('regPassword').value;
             const errDiv = document.getElementById('loginError');
             const successDiv = document.getElementById('regSuccess');
-            
-            errDiv.classList.add('hidden');
-            successDiv.classList.add('hidden');
+            errDiv.classList.add('hidden'); successDiv.classList.add('hidden');
 
             try {
                 const response = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
@@ -418,20 +528,14 @@
                     headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email, password: password, options: { data: { full_name: nama } } })
                 });
-
                 const resData = await response.json();
-                if (!response.ok) throw new Error(resData.error_description || resData.message || "Gagal mendaftar.");
-
-                successDiv.innerText = "Pendaftaran Berhasil! Silakan beralih ke tab LOGIN.";
+                if (!response.ok) throw new Error(resData.error_description || resData.message || "Gagal.");
+                successDiv.innerText = "Success! Please switch to LOGIN tab.";
                 successDiv.classList.remove('hidden');
                 document.getElementById('signUpForm').reset();
-            } catch (error) {
-                errDiv.innerText = error.message;
-                errDiv.classList.remove('hidden');
-            }
+            } catch (error) { errDiv.innerText = error.message; errDiv.classList.remove('hidden'); }
         });
 
-        // AKSI LOGIN SISTEM
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -445,84 +549,52 @@
                     headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                
                 const resAuthData = await responseAuth.json();
-                if (!responseAuth.ok) throw new Error(resAuthData.error_description || "Email atau password salah.");
+                if (!responseAuth.ok) throw new Error(resAuthData.error_description || "Wrong email/password.");
 
-                const tokenUser = resAuthData.access_token;
-                localStorage.setItem('supabase_token', tokenUser);
+                localStorage.setItem('supabase_token', resAuthData.access_token);
                 localStorage.setItem('user_logged_email', email);
 
                 if (email === 'admin1@villabali.com') {
-                    window.location.href = 'https://project-sewa-villa.vercel.app/admin';
-                    return; 
+                    window.location.href = 'https://project-sewa-villa.vercel.app/admin'; return; 
                 }
-
                 const responseRole = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(email)}`, {
-                    method: 'GET',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${tokenUser}` } 
+                    method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${resAuthData.access_token}` } 
                 });
-
                 if (responseRole.ok) {
                     const resRoleData = await responseRole.json();
-                    if (resRoleData && resRoleData.length > 0) {
-                        window.location.href = 'https://project-sewa-villa.vercel.app/admin';
-                        return; 
-                    }
+                    if (resRoleData && resRoleData.length > 0) { window.location.href = 'https://project-sewa-villa.vercel.app/admin'; return; }
                 }
-
                 window.location.href = 'https://project-sewa-villa.vercel.app/customer';
-            } catch (error) {
-                errDiv.innerText = error.message;
-                errDiv.classList.remove('hidden');
-            }
+            } catch (error) { errDiv.innerText = error.message; errDiv.classList.remove('hidden'); }
         });
 
-        // AKSI SUBMIT FORM BOOKING DIRECT
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const msg = document.getElementById('statusMessage');
-            
             if (!kalenderVilla || kalenderVilla.selectedDates.length < 2) {
                 msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700";
-                msg.innerText = "Pilih rentang tanggal check-in & check-out.";
-                msg.classList.remove('hidden');
-                return;
+                msg.innerText = "Please select check-in & check-out range."; msg.classList.remove('hidden'); return;
             }
-
-            const tgl = kalenderVilla.selectedDates;
-            const fmt = (d) => d.toISOString().split('T')[0];
-            
+            const tgl = kalenderVilla.selectedDates; const fmt = (d) => d.toISOString().split('T')[0];
             const dataBooking = {
                 nama_tamu: document.getElementById('nama').value,
                 email_tamu: document.getElementById('email').value.trim().toLowerCase(),
-                tanggal_checkin: fmt(tgl[0]),
-                tanggal_checkout: fmt(tgl[1]),
+                tanggal_checkin: fmt(tgl[0]), tanggal_checkout: fmt(tgl[1]),
                 tipe_villa: document.getElementById('pilihanVilla').value,
-                status: "Pending Payment",
-                created_at: new Date().toISOString()
+                status: "Pending Payment", created_at: new Date().toISOString()
             };
-            
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/reservasi_villa`, {
-                    method: 'POST',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify(dataBooking)
                 });
-                
                 if(res.ok || res.status === 201 || res.status === 204) {
                     msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-green-100 text-green-700";
-                    msg.innerText = "Pemesanan Berhasil Dicatat! Silakan buka menu profil Anda di kanan atas, lalu pilih 'Reservasi Saya' untuk melakukan pembayaran.";
-                    document.getElementById('bookingForm').reset();
-                    kalenderVilla.clear();
-                    ambilDataReservasi();
-                } else { 
-                    throw new Error("Gagal menyimpan data."); 
-                }
-            } catch (error) {
-                msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700";
-                msg.innerText = "Terjadi kesalahan sistem.";
-            }
+                    msg.innerText = "Booking recorded successfully! Please open your profile dropdown on top-right, and select 'My Reservations' to proceed with payment.";
+                    document.getElementById('bookingForm').reset(); kalenderVilla.clear(); ambilDataReservasi();
+                } else { throw new Error("Gagal."); }
+            } catch (error) { msg.className = "mt-4 p-3 rounded-md text-sm text-center bg-red-100 text-red-700"; msg.innerText = "System error."; }
         });
     </script>
 </body>
