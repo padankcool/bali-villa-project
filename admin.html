@@ -24,8 +24,9 @@
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto px-4 py-8">
-        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-3xl font-serif text-stone-900 font-bold">Kelola Reservasi Villa</h1>
                 <p class="text-xs text-stone-500 mt-1 uppercase tracking-wider">Daftar permintaan booking masuk dari sistem kustomer.</p>
@@ -48,13 +49,30 @@
                         </tr>
                     </thead>
                     <tbody id="adminTableBody">
-                        <tr>
-                            <td colspan="5" class="p-8 text-center text-stone-400">Sedang memvalidasi hak akses admin...</td>
-                        </tr>
+                        <tr><td colspan="5" class="p-8 text-center text-stone-400">Sedang memvalidasi hak akses admin...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
+        <div id="superAdminArea" class="hidden">
+            <div class="bg-stone-900 rounded-xl shadow-lg border border-stone-800 overflow-hidden text-white mt-12">
+                <div class="p-6 border-b border-stone-800">
+                    <h2 class="text-xl font-serif font-bold text-amber-500">Manajemen Staf & Akses</h2>
+                    <p class="text-xs text-stone-400 mt-1">Tambahkan email karyawan baru untuk memberikan mereka akses ke portal admin ini.</p>
+                </div>
+                <div class="p-6">
+                    <form id="formTambahStaf" class="flex flex-col sm:flex-row gap-4">
+                        <input type="email" id="emailStafBaru" required placeholder="Masukkan alamat email staf..." class="flex-grow p-3 rounded-lg bg-stone-800 border border-stone-700 text-sm focus:outline-none focus:border-amber-500 text-white placeholder-stone-500">
+                        <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg text-sm transition whitespace-nowrap">
+                            + Daftarkan Staf
+                        </button>
+                    </form>
+                    <div id="pesanStaf" class="mt-4 text-xs hidden"></div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <script>
@@ -64,24 +82,18 @@
         const token = localStorage.getItem('supabase_token');
         const emailAktif = localStorage.getItem('user_logged_email');
 
-        // ========================================================
-        // 🚨 LOGIKA SATPAM KETAT: ANTI-INTIP & LANGSUNG TENDANG
-        // ========================================================
         async function jalankanSatpamAdmin() {
-            // 1. Cek isi sesi login dasar
             if (!token || !emailAktif) {
                 localStorage.clear();
                 window.location.href = 'index.html';
                 return;
             }
 
-            // 2. Jalur Tol Khusus Super Admin (Langsung Lolos)
             if (emailAktif === 'admin1@villabali.com') {
-                bukaAksesHalaman();
+                bukaAksesHalaman(true); // True artinya dia Super Admin
                 return;
             }
 
-            // 3. Verifikasi Sesi Token secara Dinamis ke Database
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/user_roles?email=eq.${encodeURIComponent(emailAktif)}`, {
                     method: 'GET',
@@ -90,9 +102,8 @@
 
                 const data = await response.json();
 
-                // Pastikan data ditemukan di tabel user_roles
                 if (response.ok && Array.isArray(data) && data.length > 0) {
-                    bukaAksesHalaman();
+                    bukaAksesHalaman(false); // False artinya dia Staf biasa
                 } else {
                     tendangCustomerNakal();
                 }
@@ -101,8 +112,7 @@
             }
         }
 
-        function bukaAksesHalaman() {
-            // Lepas gembok CSS agar halaman bisa terlihat semestinya
+        function bukaAksesHalaman(isSuperAdmin) {
             document.documentElement.style.display = 'block';
             document.documentElement.style.visibility = 'visible';
             document.body.style.display = 'block';
@@ -111,22 +121,23 @@
             const emailLabel = document.getElementById('adminEmail');
             if (emailLabel) emailLabel.innerText = emailAktif;
             
-            // Jalankan fungsi penarik data database
+            // Tampilkan fitur khusus jika yang login adalah Super Admin
+            if (isSuperAdmin) {
+                document.getElementById('superAdminArea').classList.remove('hidden');
+            }
+
             ambilSemuaReservasi();
         }
 
         function tendangCustomerNakal() {
-            // Hancurkan sisa rendering dokumen di browser, lalu alihkan ke page rejected
             document.documentElement.innerHTML = '';
             window.location.href = 'rejected.html';
         }
 
-        // Jalankan instruksi interogasi saat file ini mulai diproses browser
         jalankanSatpamAdmin();
 
-
         // ========================================================
-        // 📊 OPERASI DATA RESERVASI
+        // 📊 MANAJEMEN DATA RESERVASI
         // ========================================================
         async function ambilSemuaReservasi() {
             const tbody = document.getElementById('adminTableBody');
@@ -187,12 +198,12 @@
                     `;
                 });
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-600">Gagal memuat data dari database Supabase.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-600">Gagal memuat data.</td></tr>`;
             }
         }
 
         async function prosesKeputusanBooking(id, statusBaru) {
-            const pesanConf = statusBaru === 'Confirmed' ? "ACC dan terbitkan E-ticket untuk pesanan ini?" : "Tolak dan batalkan pesanan ini?";
+            const pesanConf = statusBaru === 'Confirmed' ? "ACC pesanan ini?" : "Tolak pesanan ini?";
             if (!confirm(pesanConf)) return;
 
             try {
@@ -203,15 +214,48 @@
                 });
 
                 if (res.ok) {
-                    alert(statusBaru === 'Confirmed' ? "Pemesanan berhasil di-ACC!" : "Pemesanan berhasil ditolak.");
                     ambilSemuaReservasi();
                 } else {
                     alert("Gagal memperbarui status.");
                 }
-            } catch (e) {
-                alert("Gangguan koneksi database.");
-            }
+            } catch (e) { alert("Gangguan koneksi database."); }
         }
+
+        // ========================================================
+        // 🚀 FUNGSI TAMBAH STAF BARU (KHUSUS SUPER ADMIN)
+        // ========================================================
+        document.getElementById('formTambahStaf').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const emailBaru = document.getElementById('emailStafBaru').value.trim().toLowerCase();
+            const msgDiv = document.getElementById('pesanStaf');
+            
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/user_roles`, {
+                    method: 'POST',
+                    headers: { 
+                        'apikey': SUPABASE_KEY, 
+                        'Authorization': `Bearer ${token}`, 
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal' // Memberitahu Supabase untuk eksekusi saja
+                    },
+                    body: JSON.stringify({ email: emailBaru, role: 'admin' })
+                });
+                
+                if (res.ok || res.status === 201) {
+                    msgDiv.className = "mt-4 text-sm font-medium text-emerald-400";
+                    msgDiv.innerText = `✅ Berhasil! Silakan arahkan pemilik email (${emailBaru}) untuk melakukan 'SIGN UP' di halaman depan agar password mereka terbuat.`;
+                    msgDiv.classList.remove('hidden');
+                    document.getElementById('formTambahStaf').reset();
+                } else {
+                    const errorData = await res.json();
+                    throw new Error(errorData.message || "Gagal menyimpan ke database.");
+                }
+            } catch (error) {
+                msgDiv.className = "mt-4 text-sm font-medium text-red-400";
+                msgDiv.innerText = `❌ Error: ${errorData.message || "Email mungkin sudah terdaftar."}`;
+                msgDiv.classList.remove('hidden');
+            }
+        });
 
         function logout() { 
             localStorage.clear(); 
