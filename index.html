@@ -23,7 +23,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div class="absolute left-0 mt-2 w-48 bg-white border border-stone-100 rounded-lg shadow-lg py-2 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
-                        <a href="#bookingFormSection" class="block px-4 py-2 text-xs hover:bg-stone-50 text-stone-700 hover:text-stone-900">Deluxe Bedroom Pool Villa</a>
+                        <a href="#bookingFormSection" class="block px-4 py-2 text-xs hover:bg-stone-50 text-stone-700 hover:text-stone-900">1-Bedroom Pool Villa</a>
                         <a href="#bookingFormSection" class="block px-4 py-2 text-xs hover:bg-stone-50 text-stone-700 hover:text-stone-900">Presidential Suite</a>
                     </div>
                 </div>
@@ -36,47 +36,23 @@
                     <button onclick="bukaModalLogin()" class="hover:text-stone-900 transition font-semibold text-stone-500 uppercase tracking-wider focus:outline-none text-sm">LOGIN</button>
                 </div>
             </div>
-
-            <div class="flex items-center md:hidden">
-                <button onclick="toggleMobileMenu()" class="text-stone-700 hover:text-stone-900 focus:outline-none p-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-stone-100 px-4 py-4 space-y-3 shadow-inner">
-            <a href="/" onclick="toggleMobileMenu()" class="block text-sm font-medium tracking-wider text-stone-600 hover:text-stone-900 py-1">BERANDA</a>
-            <div class="border-t border-stone-100 my-1"></div>
-            <span class="block text-[10px] uppercase tracking-wider text-stone-400 font-bold">Koleksi Villa</span>
-            <a href="#bookingFormSection" onclick="toggleMobileMenu()" class="block text-xs font-medium text-stone-600 hover:text-stone-900 pl-2 py-0.5">Deluxe Bedroom Pool Villa</a>
-            <a href="#bookingFormSection" onclick="toggleMobileMenu()" class="block text-xs font-medium text-stone-600 hover:text-stone-900 pl-2 py-0.5">Presidential Suite</a>
-            <div class="border-t border-stone-100 my-1"></div>
-            <a href="galeri" onclick="toggleMobileMenu()" class="block text-sm font-medium tracking-wider text-stone-600 hover:text-stone-900 py-1">GALERI</a>
-            <div class="border-t border-stone-100 my-2"></div>
-            <a href="#bookingFormSection" onclick="toggleMobileMenu()" class="block text-center bg-stone-900 text-white text-xs py-2.5 rounded font-medium tracking-wider shadow-sm">BOOK NOW</a>
-            
-            <div id="authNavAreaMobile" class="pt-2">
-                <button onclick="bukaModalLogin(); toggleMobileMenu();" class="w-full text-center hover:bg-stone-50 text-stone-700 transition font-semibold uppercase tracking-wider focus:outline-none text-xs border border-stone-300 py-2.5 rounded-lg">LOGIN / SIGN UP</button>
-            </div>
         </div>
     </nav>
 
-    <header id="parallaxSlider" class="relative h-[45vh] md:h-[55vh] bg-cover bg-center bg-fixed flex items-center justify-center transition-all duration-700 ease-in-out" style="background-image: url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80');">
+    <header id="parallaxSlider" class="relative h-[55vh] bg-cover bg-center bg-fixed flex items-center justify-center transition-all duration-700 ease-in-out" style="background-image: url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80');">
         <div class="absolute inset-0 bg-black/45"></div>
         <div class="relative text-center text-white px-4 select-none z-10">
             <h1 class="text-4xl md:text-6xl font-serif mb-2 tracking-wide drop-shadow-md">Ubud Haven</h1>
             <p class="text-xs md:text-sm font-light tracking-widest uppercase bg-black/20 inline-block px-3 py-1 rounded backdrop-blur-sm">Luxury Private Villas Development</p>
         </div>
 
-        <button onclick="klikPanahManual(-1)" class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/60 text-white p-2.5 md:p-3 rounded-full transition duration-200 z-20 focus:outline-none backdrop-blur-sm border border-white/10 group">
-            <svg class="w-5 h-5 md:w-6 md:h-6 transform group-hover:-translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button onclick="klikPanahManual(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/60 text-white p-3 rounded-full transition duration-200 z-20 focus:outline-none backdrop-blur-sm border border-white/10 group">
+            <svg class="w-6 h-6 transform group-hover:-translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
         </button>
-        <button onclick="klikPanahManual(1)" class="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/60 text-white p-2.5 md:p-3 rounded-full transition duration-200 z-20 focus:outline-none backdrop-blur-sm border border-white/10 group">
-            <svg class="w-5 h-5 md:w-6 md:h-6 transform group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button onclick="klikPanahManual(1)" class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/60 text-white p-3 rounded-full transition duration-200 z-20 focus:outline-none backdrop-blur-sm border border-white/10 group">
+            <svg class="w-6 h-6 transform group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
         </button>
@@ -92,12 +68,12 @@
     <main class="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-8">
         <section class="md:col-span-2 space-y-6">
             <h2 class="text-3xl font-serif">Koleksi Akomodasi Mewah</h2>
-            <p class="text-stone-600 leading-relaxed text-sm md:text-base">
+            <p class="text-stone-600 leading-relaxed">
                 Nikmati ketenangan total di tengah alam Ubud. Pilih antara 1-Bedroom Private Pool Villa yang intim, atau Presidential 2-Bedroom Suite yang megah untuk keluarga Anda. Semua dilengkapi dengan pelayanan butler 24 jam.
             </p>
             <div class="grid grid-cols-2 gap-4">
-                <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=600&q=80" alt="Pool" class="rounded-lg shadow-sm h-36 md:h-48 object-cover w-full">
-                <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" alt="Bedroom" class="rounded-lg shadow-sm h-36 md:h-48 object-cover w-full">
+                <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=600&q=80" alt="Pool" class="rounded-lg shadow-sm h-48 object-cover w-full">
+                <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" alt="Bedroom" class="rounded-lg shadow-sm h-48 object-cover w-full">
             </div>
         </section>
 
@@ -106,24 +82,24 @@
             <form id="bookingForm" class="space-y-4">
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Nama Lengkap</label>
-                    <input type="text" id="nama" required class="w-full p-2.5 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
+                    <input type="text" id="nama" required class="w-full p-2 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Email</label>
-                    <input type="email" id="email" required class="w-full p-2.5 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
+                    <input type="email" id="email" required class="w-full p-2 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Pilih Tipe Villa</label>
-                    <select id="pilihanVilla" required class="w-full p-2.5 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm font-semibold text-stone-700" onchange="ambilDataReservasi()">
+                    <select id="pilihanVilla" required class="w-full p-2 border rounded-md bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-500 text-sm font-semibold text-stone-700" onchange="ambilDataReservasi()">
                         <option value="1-Bedroom Private Pool Villa">1-Bedroom Private Pool Villa</option>
                         <option value="Presidential 2-Bedroom Suite">Presidential 2-Bedroom Suite</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-stone-500 font-medium mb-1">Tanggal Menginap</label>
-                    <input type="text" id="rangeTanggal" placeholder="Pilih Check-In & Check-Out" required class="w-full p-2.5 border rounded-md bg-stone-50 text-sm focus:outline-none focus:ring-1 focus:ring-stone-500">
+                    <input type="text" id="rangeTanggal" placeholder="Pilih Check-In & Check-Out" required class="w-full p-2 border rounded-md bg-stone-50 text-sm focus:outline-none focus:ring-1 focus:ring-stone-500">
                 </div>
-                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-md font-medium transition duration-200 text-sm">Pesan Sekarang</button>
+                <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white p-3 rounded-md font-medium transition duration-200">Pesan Sekarang</button>
             </form>
             <div id="statusMessage" class="mt-4 p-3 rounded-md text-sm text-center hidden"></div>
         </section>
@@ -173,16 +149,6 @@
         const SUPABASE_URL = "https://vvgchnwafsiouqsshrfb.supabase.co"; 
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2Z2NobndhZnNpb3Vxc3NocmZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTUwNTcsImV4cCI6MjA5ODM3MTA1N30.bC-GO4HHdBo4zxNfJZ4BDmIPfQKlzA6d_9g_-ThPBoc"; 
 
-       // tugel buat tamplian mobile
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            if (menu.classList.contains('hidden')) {
-                menu.classList.remove('hidden');
-            } else {
-                menu.classList.add('hidden');
-            }
-        }
-
         // ========================================================
         // 🚀 LOGIKA AUTO-PLAY PARALLAX SLIDER (3 DETIK)
         // ========================================================
@@ -190,10 +156,13 @@
             "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
             "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=1200&q=80",
             "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80" ];
+            "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+        ];
+        
         let indexSlideAktif = 0;
         let timerAutoSlide;
 
+        // Fungsi Inti Perpindahan Slide
         function geserSlideSlider(arah) {
             indexSlideAktif += arah;
             if (indexSlideAktif < 0) {
@@ -214,53 +183,54 @@
             }
         }
 
+        // Jalankan Timer 3 Detik
         function mulaiAutoSlide() {
-            timerAutoSlide = setInterval(() => { geserSlideSlider(1); }, 3000);
+            timerAutoSlide = setInterval(() => {
+                geserSlideSlider(1); // Geser ke kanan tiap 3 detik
+            }, 3000);
         }
 
+        // Jika user klik manual, reset timer agar tidak bentrok / loncat ganda
         function klikPanahManual(arah) {
             clearInterval(timerAutoSlide);
             geserSlideSlider(arah);
             mulaiAutoSlide();
         }
 
+        // Mulai otomatis saat dokumen pertama kali dirender
         document.addEventListener("DOMContentLoaded", () => {
             mulaiAutoSlide();
         });
 
 
         // ========================================================
-        // 🔐 DETEKSI STATUS LOGIN PADA DESKTOP DAN MOBILE NAV
+        // 🔐 DETEKSI STATUS LOGIN AMAN & DROPDOWN PROFIL
         // ========================================================
         document.addEventListener("DOMContentLoaded", () => {
             const tokenUserAktif = localStorage.getItem('supabase_token');
             const emailUserAktif = localStorage.getItem('user_logged_email');
             const authNavArea = document.getElementById('authNavArea');
-            const authNavAreaMobile = document.getElementById('authNavAreaMobile');
 
             if (tokenUserAktif && emailUserAktif) {
-                // Template struktur komponen menu dropdown profil
-                const dropdownHTML = `
-                    <div class="relative group">
-                        <button class="flex items-center space-x-1 bg-stone-100 hover:bg-stone-200 text-stone-900 font-mono text-xs px-3 py-2 rounded-lg font-bold tracking-wider transition focus:outline-none shadow-sm w-full justify-between md:justify-start">
-                            <span class="truncate max-w-[150px]">${emailUserAktif}</span>
-                            <svg class="w-3 h-3 text-stone-500 ml-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div class="absolute right-0 mt-2 w-48 bg-white border border-stone-100 rounded-lg shadow-lg py-1 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 z-50">
-                            <button onclick="kePortalSesuaiRole()" class="w-full text-left block px-4 py-2.5 text-xs text-stone-700 hover:bg-stone-50 hover:text-stone-900 font-semibold transition">
-                                📋 Reservasi Saya
+                if (authNavArea) {
+                    authNavArea.innerHTML = `
+                        <div class="relative group z-50">
+                            <button class="flex items-center space-x-1 bg-stone-100 hover:bg-stone-200 text-stone-900 font-mono text-xs px-3 py-2 rounded-lg font-bold tracking-wider transition focus:outline-none shadow-sm">
+                                <span>${emailUserAktif}</span>
+                                <svg class="w-3 h-3 text-stone-500 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </button>
-                            <div class="border-t border-stone-100"></div>
-                            <button onclick="logoutIndex()" class="w-full text-left block px-4 py-2.5 text-xs text-red-600 hover:bg-red-50 font-semibold transition">
-                                🚪 Keluar
-                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white border border-stone-100 rounded-lg shadow-lg py-1 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                                <button onclick="kePortalSesuaiRole()" class="w-full text-left block px-4 py-2.5 text-xs text-stone-700 hover:bg-stone-50 hover:text-stone-900 font-semibold transition">
+                                    📋 Reservasi Saya
+                                </button>
+                                <div class="border-t border-stone-100"></div>
+                                <button onclick="logoutIndex()" class="w-full text-left block px-4 py-2.5 text-xs text-red-600 hover:bg-red-50 font-semibold transition">
+                                    🚪 Keluar
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                `;
-
-                // Suntikkan ke navbar desktop dan mobile sekaligus
-                if (authNavArea) authNavArea.innerHTML = dropdownHTML;
-                if (authNavAreaMobile) authNavAreaMobile.innerHTML = dropdownHTML;
+                    `;
+                }
 
                 const formEmailInput = document.getElementById('email');
                 if (formEmailInput) {
@@ -366,7 +336,9 @@
             }
         }
 
-        // AKSI DAFTAR
+        // ========================================================
+        // 🚀 PROSES FORM LOGIN, SIGNUP, & SUBMIT BOOKING
+        // ========================================================
         document.getElementById('signUpForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const nama = document.getElementById('regNama').value;
@@ -397,7 +369,6 @@
             }
         });
 
-        // AKSI LOGIN
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -444,7 +415,6 @@
             }
         });
 
-        // AKSI SUBMIT BOOKING
         document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const msg = document.getElementById('statusMessage');
